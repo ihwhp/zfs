@@ -25,4 +25,5 @@ curl -O https://raw.githubusercontent.com/openzfs/zfs/zfs-0.8-release/contrib/ba
 chmod +x zfs
 
 #Install utils
+yum install -y epel-release
 yum install -y nano ncdu tree
