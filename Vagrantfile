@@ -41,7 +41,7 @@ def create_disks(vbox, name)
   dir = "../vdisks"
   FileUtils.mkdir_p dir unless File.directory?(dir)
 
-  disks = (1..6).map { |x| ["disk#{x}_", '1024'] }
+  disks = (1..8).map { |x| ["disk#{x}_", '512'] }
 
   disks.each_with_index do |(name, size), i|
     file_to_disk = "#{dir}/#{name}.vdi"
@@ -82,10 +82,11 @@ Vagrant.configure("2") do |config|
 config.vm.define "server" do |server|
 
   server.vm.host_name = 'server'
-  server.vm.network :private_network, ip: "10.0.0.41"
+  server.vm.network :private_network, ip: "192.168.56.20"
 
   server.vm.provider "virtualbox" do |vb|
-    vb.memory = "1024"
+    vb.memory = "4096"
+    vb.cpus = "2"
     vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
@@ -96,14 +97,14 @@ config.vm.define "server" do |server|
 
 
   server.vm.provision "shell",
-    name: "Setup zfs",
-    path: "setup_zfs.sh"
+    name: "Botstrap",
+    path: "bootstrap.sh"
   end
 
 
   config.vm.define "client" do |client|
     client.vm.host_name = 'client'
-    client.vm.network :private_network, ip: "10.0.0.40"
+    client.vm.network :private_network, ip: "192.168.56.21"
     client.vm.provider :virtualbox do |vb|
       vb.memory = "1024"
       vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
