@@ -16,7 +16,7 @@ yum-config-manager --disable zfs
 yum install -y zfs
 
 #Add kernel module zfs
-modprobe zfs
+sudo modprobe zfs
 
 
 #Enable bash completion

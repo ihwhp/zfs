@@ -97,7 +97,7 @@ config.vm.define "server" do |server|
 
 
   server.vm.provision "shell",
-    name: "Botstrap",
+    name: "Bootstrap",
     path: "bootstrap.sh"
   end
 
