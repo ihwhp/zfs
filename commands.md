@@ -1,4 +1,5 @@
 # Commands used:
+```
 lsblk -f
 zpool --help
 zpool create otus1 mirror /dev/sd{b,c}   
@@ -34,4 +35,5 @@ zfs receive otus1/test@today < otus_task2.file
 ll /otus1/test/
 find /otus1/test/ -name "secret_message"
 cat /otus1/test/task1/file_mess/secret_message
+```
 \#
