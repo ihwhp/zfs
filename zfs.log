@@ -1,0 +1,1080 @@
+Script started on 2022-05-24 14:43:31+03:00
+]0;mp@almavm:~/otus/zfs[mp@almavm zfs]$ vagrant ssh server
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+Last login: Tue May 24 11:38:07 2022 from 10.0.2.2
+]0;vagrant@server:~[vagrant@server ~]$ sudo -i
+]0;root@server:~[root@server ~]# lsb
+lsblk        lsb_release  
+[root@server ~]# lsblk -f
+NAME   FSTYPE LABEL UUID                                 MOUNTPOINT
+sda                                                      
+├─sda1 swap         95292fe3-5d21-46ec-a652-3988a8f1b7a1 [SWAP]
+└─sda2 xfs          b9b5cb58-7138-462b-833c-f9d81eff236e /
+sdb                                                      
+sdc                                                      
+sdd                                                      
+sde                                                      
+sdf                                                      
+sdg                                                      
+sdh                                                      
+sdi                                                      
+]0;root@server:~[root@server ~]# zpool --help
+usage: zpool command args ...
+where 'command' is one of the following:
+
+	version
+
+	create [-fnd] [-o property=value] ... 
+	    [-O file-system-property=value] ... 
+	    [-m mountpoint] [-R root] <pool> <vdev> ...
+	destroy [-f] <pool>
+
+	add [-fgLnP] [-o property=value] <pool> <vdev> ...
+	remove [-npsw] <pool> <device> ...
+
+	labelclear [-f] <vdev>
+
+	checkpoint [-d [-w]] <pool> ...
+
+	list [-gHLpPv] [-o property[,...]] [-T d|u] [pool] ... 
+	    [interval [count]]
+	iostat [[[-c [script1,script2,...][-lq]]|[-rw]] [-T d | u] [-ghHLpPvy]
+	    [[pool ...]|[pool vdev ...]|[vdev ...]] [[-n] interval [count]]
+	status [-c [script1,script2,...]] [-igLpPstvxD]  [-T d|u] [pool] ... 
+	    [interval [count]]
+
+	online [-e] <pool> <device> ...
+	offline [-f] [-t] <pool> <device> ...
+	clear [-nF] <pool> [device]
+	reopen [-n] <pool>
+
+	attach [-fsw] [-o property=value] <pool> <device> <new-device>
+	detach <pool> <device>
+	replace [-fsw] [-o property=value] <pool> <device> [new-device]
+	split [-gLnPl] [-R altroot] [-o mntopts]
+	    [-o property=value] <pool> <newpool> [<device> ...]
+
+	initialize [-c | -s] [-w] <pool> [<device> ...]
+	resilver <pool> ...
+	scrub [-s | -p] [-w] <pool> ...
+	trim [-dw] [-r <rate>] [-c | -s] <pool> [<device> ...]
+
+	import [-d dir] [-D]
+	import [-o mntopts] [-o property=value] ... 
+	    [-d dir | -c cachefile] [-D] [-l] [-f] [-m] [-N] [-R root] [-F [-n]] -a
+	import [-o mntopts] [-o property=value] ... 
+	    [-d dir | -c cachefile] [-D] [-l] [-f] [-m] [-N] [-R root] [-F [-n]]
+	    [--rewind-to-checkpoint] <pool | id> [newpool]
+	export [-af] <pool> ...
+	upgrade
+	upgrade -v
+	upgrade [-V version] <-a | pool ...>
+	reguid <pool>
+
+	history [-il] [<pool>] ...
+	events [-vHf [pool] | -c]
+
+	get [-Hp] [-o "all" | field[,...]] <"all" | property[,...]> <pool> ...
+	set <property=value> <pool> 
+	sync [pool] ...
+
+	wait [-Hp] [-T d|u] [-t <activity>[,...]] <pool> [interval]
+]0;root@server:~[root@server ~]# zpool create otus1 mirror /dev/sd{b,c}
+]0;root@server:~[root@server ~]# zpool create otus2 mirror /dev/sd{d,e}
+]0;root@server:~[root@server ~]# zpool create otus3 mirror /dev/sd{f,g}
+]0;root@server:~[root@server ~]# zpool create otus4 mirror /dev/sd{h,i}
+]0;root@server:~[root@server ~]# zpool list
+NAME    SIZE  ALLOC   FREE  CKPOINT  EXPANDSZ   FRAG    CAP  DEDUP    HEALTH  ALTROOT
+otus1   480M   105K   480M        -         -     0%     0%  1.00x    ONLINE  -
+otus2   480M   105K   480M        -         -     0%     0%  1.00x    ONLINE  -
+otus3   480M   100K   480M        -         -     0%     0%  1.00x    ONLINE  -
+otus4   480M  97.5K   480M        -         -     0%     0%  1.00x    ONLINE  -
+]0;root@server:~[root@server ~]# zpool status
+  pool: otus1
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus1       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdb     ONLINE       0     0     0
+	    sdc     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus2
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus2       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdd     ONLINE       0     0     0
+	    sde     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus3
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus3       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdf     ONLINE       0     0     0
+	    sdg     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus4
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus4       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdh     ONLINE       0     0     0
+	    sdi     ONLINE       0     0     0
+
+errors: No known data errors
+]0;root@server:~[root@server ~]# zfs get all
+NAME   PROPERTY              VALUE                  SOURCE
+otus1  type                  filesystem             -
+otus1  creation              Tue May 24 11:44 2022  -
+otus1  used                  105K                   -
+otus1  available             352M                   -
+otus1  referenced            24K                    -
+otus1  compressratio         1.00x                  -
+otus1  mounted               yes                    -
+otus1  quota                 none                   default
+otus1  reservation           none                   default
+otus1  recordsize            128K                   default
+otus1  mountpoint            /otus1                 default
+otus1  sharenfs              off                    default
+otus1  checksum              on                     default
+otus1  compression           off                    default
+otus1  atime                 on                     default
+otus1  devices               on                     default
+otus1  exec                  on                     default
+otus1  setuid                on                     default
+otus1  readonly              off                    default
+otus1  zoned                 off                    default
+otus1  snapdir               hidden                 default
+otus1  aclmode               discard                default
+otus1  aclinherit            restricted             default
+otus1  createtxg             1                      -
+otus1  canmount              on                     default
+otus1  xattr                 on                     default
+otus1  copies                1                      default
+otus1  version               5                      -
+otus1  utf8only              off                    -
+otus1  normalization         none                   -
+otus1  casesensitivity       sensitive              -
+otus1  vscan                 off                    default
+otus1  nbmand                off                    default
+otus1  sharesmb              off                    default
+otus1  refquota              none                   default
+otus1  refreservation        none                   default
+otus1  guid                  12004862720625148376   -
+otus1  primarycache          all                    default
+otus1  secondarycache        all                    default
+otus1  usedbysnapshots       0B                     -
+otus1  usedbydataset         24K                    -
+otus1  usedbychildren        81K                    -
+otus1  usedbyrefreservation  0B                     -
+otus1  logbias               latency                default
+otus1  objsetid              54                     -
+otus1  dedup                 off                    default
+otus1  mlslabel              none                   default
+otus1  sync                  standard               default
+otus1  dnodesize             legacy                 default
+otus1  refcompressratio      1.00x                  -
+otus1  written               24K                    -
+otus1  logicalused           39K                    -
+otus1  logicalreferenced     12K                    -
+otus1  volmode               default                default
+otus1  filesystem_limit      none                   default
+otus1  snapshot_limit        none                   default
+otus1  filesystem_count      none                   default
+otus1  snapshot_count        none                   default
+otus1  snapdev               hidden                 default
+otus1  acltype               off                    default
+otus1  context               none                   default
+otus1  fscontext             none                   default
+otus1  defcontext            none                   default
+otus1  rootcontext           none                   default
+otus1  relatime              off                    default
+otus1  redundant_metadata    all                    default
+otus1  overlay               on                     default
+otus1  encryption            off                    default
+otus1  keylocation           none                   default
+otus1  keyformat             none                   default
+otus1  pbkdf2iters           0                      default
+otus1  special_small_blocks  0                      default
+otus2  type                  filesystem             -
+otus2  creation              Tue May 24 11:44 2022  -
+otus2  used                  105K                   -
+otus2  available             352M                   -
+otus2  referenced            24K                    -
+otus2  compressratio         1.00x                  -
+otus2  mounted               yes                    -
+otus2  quota                 none                   default
+otus2  reservation           none                   default
+otus2  recordsize            128K                   default
+otus2  mountpoint            /otus2                 default
+otus2  sharenfs              off                    default
+otus2  checksum              on                     default
+otus2  compression           off                    default
+otus2  atime                 on                     default
+otus2  devices               on                     default
+otus2  exec                  on                     default
+otus2  setuid                on                     default
+otus2  readonly              off                    default
+otus2  zoned                 off                    default
+otus2  snapdir               hidden                 default
+otus2  aclmode               discard                default
+otus2  aclinherit            restricted             default
+otus2  createtxg             1                      -
+otus2  canmount              on                     default
+otus2  xattr                 on                     default
+otus2  copies                1                      default
+otus2  version               5                      -
+otus2  utf8only              off                    -
+otus2  normalization         none                   -
+otus2  casesensitivity       sensitive              -
+otus2  vscan                 off                    default
+otus2  nbmand                off                    default
+otus2  sharesmb              off                    default
+otus2  refquota              none                   default
+otus2  refreservation        none                   default
+otus2  guid                  7763133763793402421    -
+otus2  primarycache          all                    default
+otus2  secondarycache        all                    default
+otus2  usedbysnapshots       0B                     -
+otus2  usedbydataset         24K                    -
+otus2  usedbychildren        81K                    -
+otus2  usedbyrefreservation  0B                     -
+otus2  logbias               latency                default
+otus2  objsetid              54                     -
+otus2  dedup                 off                    default
+otus2  mlslabel              none                   default
+otus2  sync                  standard               default
+otus2  dnodesize             legacy                 default
+otus2  refcompressratio      1.00x                  -
+otus2  written               24K                    -
+otus2  logicalused           39K                    -
+otus2  logicalreferenced     12K                    -
+otus2  volmode               default                default
+otus2  filesystem_limit      none                   default
+otus2  snapshot_limit        none                   default
+otus2  filesystem_count      none                   default
+otus2  snapshot_count        none                   default
+otus2  snapdev               hidden                 default
+otus2  acltype               off                    default
+otus2  context               none                   default
+otus2  fscontext             none                   default
+otus2  defcontext            none                   default
+otus2  rootcontext           none                   default
+otus2  relatime              off                    default
+otus2  redundant_metadata    all                    default
+otus2  overlay               on                     default
+otus2  encryption            off                    default
+otus2  keylocation           none                   default
+otus2  keyformat             none                   default
+otus2  pbkdf2iters           0                      default
+otus2  special_small_blocks  0                      default
+otus3  type                  filesystem             -
+otus3  creation              Tue May 24 11:45 2022  -
+otus3  used                  100K                   -
+otus3  available             352M                   -
+otus3  referenced            24K                    -
+otus3  compressratio         1.00x                  -
+otus3  mounted               yes                    -
+otus3  quota                 none                   default
+otus3  reservation           none                   default
+otus3  recordsize            128K                   default
+otus3  mountpoint            /otus3                 default
+otus3  sharenfs              off                    default
+otus3  checksum              on                     default
+otus3  compression           off                    default
+otus3  atime                 on                     default
+otus3  devices               on                     default
+otus3  exec                  on                     default
+otus3  setuid                on                     default
+otus3  readonly              off                    default
+otus3  zoned                 off                    default
+otus3  snapdir               hidden                 default
+otus3  aclmode               discard                default
+otus3  aclinherit            restricted             default
+otus3  createtxg             1                      -
+otus3  canmount              on                     default
+otus3  xattr                 on                     default
+otus3  copies                1                      default
+otus3  version               5                      -
+otus3  utf8only              off                    -
+otus3  normalization         none                   -
+otus3  casesensitivity       sensitive              -
+otus3  vscan                 off                    default
+otus3  nbmand                off                    default
+otus3  sharesmb              off                    default
+otus3  refquota              none                   default
+otus3  refreservation        none                   default
+otus3  guid                  13481661597334858928   -
+otus3  primarycache          all                    default
+otus3  secondarycache        all                    default
+otus3  usedbysnapshots       0B                     -
+otus3  usedbydataset         24K                    -
+otus3  usedbychildren        76.5K                  -
+otus3  usedbyrefreservation  0B                     -
+otus3  logbias               latency                default
+otus3  objsetid              54                     -
+otus3  dedup                 off                    default
+otus3  mlslabel              none                   default
+otus3  sync                  standard               default
+otus3  dnodesize             legacy                 default
+otus3  refcompressratio      1.00x                  -
+otus3  written               24K                    -
+otus3  logicalused           37.5K                  -
+otus3  logicalreferenced     12K                    -
+otus3  volmode               default                default
+otus3  filesystem_limit      none                   default
+otus3  snapshot_limit        none                   default
+otus3  filesystem_count      none                   default
+otus3  snapshot_count        none                   default
+otus3  snapdev               hidden                 default
+otus3  acltype               off                    default
+otus3  context               none                   default
+otus3  fscontext             none                   default
+otus3  defcontext            none                   default
+otus3  rootcontext           none                   default
+otus3  relatime              off                    default
+otus3  redundant_metadata    all                    default
+otus3  overlay               on                     default
+otus3  encryption            off                    default
+otus3  keylocation           none                   default
+otus3  keyformat             none                   default
+otus3  pbkdf2iters           0                      default
+otus3  special_small_blocks  0                      default
+otus4  type                  filesystem             -
+otus4  creation              Tue May 24 11:45 2022  -
+otus4  used                  105K                   -
+otus4  available             352M                   -
+otus4  referenced            24K                    -
+otus4  compressratio         1.00x                  -
+otus4  mounted               yes                    -
+otus4  quota                 none                   default
+otus4  reservation           none                   default
+otus4  recordsize            128K                   default
+otus4  mountpoint            /otus4                 default
+otus4  sharenfs              off                    default
+otus4  checksum              on                     default
+otus4  compression           off                    default
+otus4  atime                 on                     default
+otus4  devices               on                     default
+otus4  exec                  on                     default
+otus4  setuid                on                     default
+otus4  readonly              off                    default
+otus4  zoned                 off                    default
+otus4  snapdir               hidden                 default
+otus4  aclmode               discard                default
+otus4  aclinherit            restricted             default
+otus4  createtxg             1                      -
+otus4  canmount              on                     default
+otus4  xattr                 on                     default
+otus4  copies                1                      default
+otus4  version               5                      -
+otus4  utf8only              off                    -
+otus4  normalization         none                   -
+otus4  casesensitivity       sensitive              -
+otus4  vscan                 off                    default
+otus4  nbmand                off                    default
+otus4  sharesmb              off                    default
+otus4  refquota              none                   default
+otus4  refreservation        none                   default
+otus4  guid                  788658511372409308     -
+otus4  primarycache          all                    default
+otus4  secondarycache        all                    default
+otus4  usedbysnapshots       0B                     -
+otus4  usedbydataset         24K                    -
+otus4  usedbychildren        81K                    -
+otus4  usedbyrefreservation  0B                     -
+otus4  logbias               latency                default
+otus4  objsetid              54                     -
+otus4  dedup                 off                    default
+otus4  mlslabel              none                   default
+otus4  sync                  standard               default
+otus4  dnodesize             legacy                 default
+otus4  refcompressratio      1.00x                  -
+otus4  written               24K                    -
+otus4  logicalused           39K                    -
+otus4  logicalreferenced     12K                    -
+otus4  volmode               default                default
+otus4  filesystem_limit      none                   default
+otus4  snapshot_limit        none                   default
+otus4  filesystem_count      none                   default
+otus4  snapshot_count        none                   default
+otus4  snapdev               hidden                 default
+otus4  acltype               off                    default
+otus4  context               none                   default
+otus4  fscontext             none                   default
+otus4  defcontext            none                   default
+otus4  rootcontext           none                   default
+otus4  relatime              off                    default
+otus4  redundant_metadata    all                    default
+otus4  overlay               on                     default
+otus4  encryption            off                    default
+otus4  keylocation           none                   default
+otus4  keyformat             none                   default
+otus4  pbkdf2iters           0                      default
+otus4  special_small_blocks  0                      default
+]0;root@server:~[root@server ~]# zfs get all |gre[K[K[K grep compression
+otus1  [01;31m[Kcompression[m[K           off                    default
+otus2  [01;31m[Kcompression[m[K           off                    default
+otus3  [01;31m[Kcompression[m[K           off                    default
+otus4  [01;31m[Kcompression[m[K           off                    default
+]0;root@server:~[root@server ~]# zfs set compression
+missing property=value argument(s)
+usage:
+	set <property=value> ... <filesystem|volume|snapshot> ...
+
+The following properties are supported:
+
+	PROPERTY       EDIT  INHERIT   VALUES
+
+	available        NO       NO   <size>
+	clones           NO       NO   <dataset>[,...]
+	compressratio    NO       NO   <1.00x or higher if compressed>
+	createtxg        NO       NO   <uint64>
+	creation         NO       NO   <date>
+	defer_destroy    NO       NO   yes | no
+	encryptionroot   NO       NO   <filesystem | volume>
+	filesystem_count  NO       NO   <count>
+	guid             NO       NO   <uint64>
+	keystatus        NO       NO   none | unavailable | available
+	logicalreferenced  NO       NO   <size>
+	logicalused      NO       NO   <size>
+	mounted          NO       NO   yes | no
+	objsetid         NO       NO   <uint64>
+	origin           NO       NO   <snapshot>
+	receive_resume_token  NO       NO   <string token>
+	redact_snaps     NO       NO   <snapshot>[,...]
+	refcompressratio  NO       NO   <1.00x or higher if compressed>
+	referenced       NO       NO   <size>
+	snapshot_count   NO       NO   <count>
+	type             NO       NO   filesystem | volume | snapshot | bookmark
+	used             NO       NO   <size>
+	usedbychildren   NO       NO   <size>
+	usedbydataset    NO       NO   <size>
+	usedbyrefreservation  NO       NO   <size>
+	usedbysnapshots  NO       NO   <size>
+	userrefs         NO       NO   <count>
+	written          NO       NO   <size>
+	aclinherit      YES      YES   discard | noallow | restricted | passthrough | passthrough-x
+	aclmode         YES      YES   discard | groupmask | passthrough | restricted
+	acltype         YES      YES   off | nfsv4 | posix
+	atime           YES      YES   on | off
+	canmount        YES       NO   on | off | noauto
+	casesensitivity  NO      YES   sensitive | insensitive | mixed
+	checksum        YES      YES   on | off | fletcher2 | fletcher4 | sha256 | sha512 | skein | edonr
+	compression     YES      YES   on | off | lzjb | gzip | gzip-[1-9] | zle | lz4 | zstd | zstd-[1-19] | zstd-fast | zstd-fast-[1-10,20,30,40,50,60,70,80,90,100,500,1000]
+	context         YES       NO   <selinux context>
+	copies          YES      YES   1 | 2 | 3
+	dedup           YES      YES   on | off | verify | sha256[,verify] | sha512[,verify] | skein[,verify] | edonr,verify
+	defcontext      YES       NO   <selinux defcontext>
+	devices         YES      YES   on | off
+	dnodesize       YES      YES   legacy | auto | 1k | 2k | 4k | 8k | 16k
+	encryption       NO      YES   on | off | aes-128-ccm | aes-192-ccm | aes-256-ccm | aes-128-gcm | aes-192-gcm | aes-256-gcm
+	exec            YES      YES   on | off
+	filesystem_limit YES       NO   <count> | none
+	fscontext       YES       NO   <selinux fscontext>
+	keyformat        NO       NO   none | raw | hex | passphrase
+	keylocation     YES       NO   prompt | <file URI>
+	logbias         YES      YES   latency | throughput
+	mlslabel        YES      YES   <sensitivity label>
+	mountpoint      YES      YES   <path> | legacy | none
+	nbmand          YES      YES   on | off
+	normalization    NO      YES   none | formC | formD | formKC | formKD
+	overlay         YES      YES   on | off
+	pbkdf2iters      NO       NO   <iters>
+	primarycache    YES      YES   all | none | metadata
+	quota           YES       NO   <size> | none
+	readonly        YES      YES   on | off
+	recordsize      YES      YES   512 to 1M, power of 2
+	redundant_metadata YES      YES   all | most
+	refquota        YES       NO   <size> | none
+	refreservation  YES       NO   <size> | none
+	relatime        YES      YES   on | off
+	reservation     YES       NO   <size> | none
+	rootcontext     YES       NO   <selinux rootcontext>
+	secondarycache  YES      YES   all | none | metadata
+	setuid          YES      YES   on | off
+	sharenfs        YES      YES   on | off | NFS share options
+	sharesmb        YES      YES   on | off | SMB share options
+	snapdev         YES      YES   hidden | visible
+	snapdir         YES      YES   hidden | visible
+	snapshot_limit  YES       NO   <count> | none
+	special_small_blocks YES      YES   zero or 512 to 1M, power of 2
+	sync            YES      YES   standard | always | disabled
+	utf8only         NO      YES   on | off
+	version         YES       NO   1 | 2 | 3 | 4 | 5 | current
+	volblocksize     NO      YES   512 to 128k, power of 2
+	volmode         YES      YES   default | full | geom | dev | none
+	volsize         YES       NO   <size>
+	vscan           YES      YES   on | off
+	xattr           YES      YES   on | off | dir | sa
+	zoned           YES      YES   on | off
+	userused@...     NO       NO   <size>
+	groupused@...    NO       NO   <size>
+	projectused@...  NO       NO   <size>
+	userobjused@...  NO       NO   <size>
+	groupobjused@...  NO       NO   <size>
+	projectobjused@...  NO       NO   <size>
+	userquota@...   YES       NO   <size> | none
+	groupquota@...  YES       NO   <size> | none
+	projectquota@... YES       NO   <size> | none
+	userobjquota@... YES       NO   <size> | none
+	groupobjquota@... YES       NO   <size> | none
+	projectobjquota@... YES       NO   <size> | none
+	written@<snap>   NO       NO   <size>
+	written#<bookmark>  NO       NO   <size>
+
+Sizes are specified in bytes with standard units such as K, M, G, etc.
+
+User-defined properties can be specified by using a name containing a colon (:).
+
+The {user|group|project}[obj]{used|quota}@ properties must be appended with
+a user|group|project specifier of one of these forms:
+    POSIX name      (eg: "matt")
+    POSIX id        (eg: "126829")
+    SMB name@domain (eg: "matt@sun")
+    SMB SID         (eg: "S-1-234-567-89")
+]0;root@server:~[root@server ~]# zfs set compression=lzjb otus1
+]0;root@server:~[root@server ~]# zfs set compression=lz4 otus2
+]0;root@server:~[root@server ~]# zfs set compression=gzip-9 otus3
+]0;root@server:~[root@server ~]# zfs set compression=zle otus4
+]0;root@server:~[root@server ~]# zf
+zfgrep           zforce           zfs              zfs_ids_to_path  
+[root@server ~]# zf
+zfgrep           zforce           zfs              zfs_ids_to_path  
+[root@server ~]# zfs [K[K[K[Kzfs set compression=zle otus4gzip-9 otus3[3Plz4 otus2jb otus1[K[11@get all | grep[C[C[C[C[C[C[C[C[C[C[C[C[K | grep compression
+otus1  [01;31m[Kcompression[m[K           lzjb                   local
+otus2  [01;31m[Kcompression[m[K           lz4                    local
+otus3  [01;31m[Kcompression[m[K           gzip-9                 local
+otus4  [01;31m[Kcompression[m[K           zle                    local
+]0;root@server:~[root@server ~]# for i in {1..4}; do  wget -P /otus$i https://gutenberg.org/cache/epub/2600/pg2600.converter.log; donee
+--2022-05-24 11:48:43--  https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+Resolving gutenberg.org (gutenberg.org)... 152.19.134.47
+Connecting to gutenberg.org (gutenberg.org)|152.19.134.47|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 40809473 (39M) [text/plain]
+Saving to: ‘/otus1/pg2600.converter.log’
+
+pg2600.converter.log            0%[                                               ]       0  --.-KB/s               pg2600.converter.log            0%[                                               ]  49.63K   170KB/s               pg2600.converter.log            0%[                                               ] 195.10K   310KB/s               pg2600.converter.log            0%[                                               ] 355.10K   402KB/s               pg2600.converter.log            1%[                                               ] 659.10K   608KB/s               pg2600.converter.log            2%[>                                              ] 883.10K   658KB/s               pg2600.converter.log            3%[>                                              ]   1.19M   748KB/s               pg2600.converter.log            3%[>                                              ]   1.46M   815KB/s               pg2600.converter.log            4%[=>                                             ]   1.72M   850KB/s               pg2600.converter.log            5%[=>                                             ]   2.02M   909KB/s               pg2600.converter.log            5%[=>                                             ]   2.28M   927KB/s               pg2600.converter.log            6%[==>                                            ]   2.55M   959KB/s               pg2600.converter.log            7%[==>                                            ]   2.88M   993KB/s               pg2600.converter.log            8%[==>                                            ]   3.21M  1.01MB/s    eta 35s    pg2600.converter.log            8%[===>                                           ]   3.47M  1.02MB/s    eta 35s    pg2600.converter.log            9%[===>                                           ]   3.81M  1.09MB/s    eta 35s    pg2600.converter.log           10%[===>                                           ]   4.08M  1.13MB/s    eta 35s    pg2600.converter.log           11%[====>                                          ]   4.42M  1.25MB/s    eta 35s    pg2600.converter.log           12%[====>                                          ]   4.72M  1.26MB/s    eta 31s    pg2600.converter.log           13%[=====>                                         ]   5.13M  1.33MB/s    eta 31s    pg2600.converter.log           13%[=====>                                         ]   5.36M  1.33MB/s    eta 31s    pg2600.converter.log           14%[=====>                                         ]   5.74M  1.37MB/s    eta 31s    pg2600.converter.log           15%[======>                                        ]   5.99M  1.34MB/s    eta 31s    pg2600.converter.log           16%[======>                                        ]   6.35M  1.38MB/s    eta 28s    pg2600.converter.log           16%[======>                                        ]   6.61M  1.37MB/s    eta 28s    pg2600.converter.log           17%[=======>                                       ]   6.92M  1.39MB/s    eta 28s    pg2600.converter.log           18%[=======>                                       ]   7.24M  1.42MB/s    eta 28s    pg2600.converter.log           19%[========>                                      ]   7.47M  1.39MB/s    eta 28s    pg2600.converter.log           20%[========>                                      ]   7.85M  1.42MB/s    eta 26s    pg2600.converter.log           20%[========>                                      ]   8.10M  1.41MB/s    eta 26s    pg2600.converter.log           21%[=========>                                     ]   8.39M  1.41MB/s    eta 26s    pg2600.converter.log           22%[=========>                                     ]   8.67M  1.41MB/s    eta 26s    pg2600.converter.log           23%[=========>                                     ]   8.99M  1.42MB/s    eta 26s    pg2600.converter.log           23%[=========>                                     ]   9.08M  1.37MB/s    eta 25s    pg2600.converter.log           24%[==========>                                    ]   9.47M  1.38MB/s    eta 25s    pg2600.converter.log           24%[==========>                                    ]   9.69M  1.35MB/s    eta 25s    pg2600.converter.log           25%[===========>                                   ]   9.96M  1.32MB/s    eta 25s    pg2600.converter.log           26%[===========>                                   ]  10.19M  1.30MB/s    eta 25s    pg2600.converter.log           26%[===========>                                   ]  10.47M  1.31MB/s    eta 23s    pg2600.converter.log           27%[===========>                                   ]  10.71M  1.29MB/s    eta 23s    pg2600.converter.log           28%[============>                                  ]  10.94M  1.27MB/s    eta 23s    pg2600.converter.log           28%[============>                                  ]  11.24M  1.27MB/s    eta 23s    pg2600.converter.log           29%[============>                                  ]  11.49M  1.26MB/s    eta 23s    pg2600.converter.log           30%[=============>                                 ]  11.82M  1.25MB/s    eta 22s    pg2600.converter.log           31%[=============>                                 ]  12.08M  1.25MB/s    eta 22s    pg2600.converter.log           31%[=============>                                 ]  12.35M  1.27MB/s    eta 22s    pg2600.converter.log           32%[==============>                                ]  12.64M  1.27MB/s    eta 22s    pg2600.converter.log           33%[==============>                                ]  12.92M  1.27MB/s    eta 22s    pg2600.converter.log           34%[===============>                               ]  13.25M  1.28MB/s    eta 21s    pg2600.converter.log           34%[===============>                               ]  13.50M  1.32MB/s    eta 21s    pg2600.converter.log           35%[===============>                               ]  13.77M  1.29MB/s    eta 21s    pg2600.converter.log           36%[================>                              ]  14.11M  1.31MB/s    eta 21s    pg2600.converter.log           36%[================>                              ]  14.39M  1.33MB/s    eta 21s    pg2600.converter.log           37%[================>                              ]  14.70M  1.36MB/s    eta 19s    pg2600.converter.log           38%[=================>                             ]  14.99M  1.38MB/s    eta 19s    pg2600.converter.log           38%[=================>                             ]  15.16M  1.32MB/s    eta 19s    pg2600.converter.log           39%[=================>                             ]  15.55M  1.36MB/s    eta 19s    pg2600.converter.log           40%[==================>                            ]  15.74M  1.34MB/s    eta 19s    pg2600.converter.log           41%[==================>                            ]  16.02M  1.34MB/s    eta 18s    pg2600.converter.log           41%[==================>                            ]  16.24M  1.30MB/s    eta 18s    pg2600.converter.log           42%[==================>                            ]  16.53M  1.30MB/s    eta 18s    pg2600.converter.log           43%[===================>                           ]  16.77M  1.27MB/s    eta 18s    pg2600.converter.log           43%[===================>                           ]  17.10M  1.28MB/s    eta 18s    pg2600.converter.log           44%[===================>                           ]  17.35M  1.26MB/s    eta 17s    pg2600.converter.log           45%[====================>                          ]  17.67M  1.28MB/s    eta 17s    pg2600.converter.log           46%[====================>                          ]  17.94M  1.26MB/s    eta 17s    pg2600.converter.log           46%[=====================>                         ]  18.28M  1.27MB/s    eta 17s    pg2600.converter.log           47%[=====================>                         ]  18.55M  1.25MB/s    eta 17s    pg2600.converter.log           48%[=====================>                         ]  18.89M  1.26MB/s    eta 16s    pg2600.converter.log           49%[======================>                        ]  19.17M  1.26MB/s    eta 16s    pg2600.converter.log           50%[======================>                        ]  19.53M  1.33MB/s    eta 16s    pg2600.converter.log           50%[======================>                        ]  19.82M  1.29MB/s    eta 16s    pg2600.converter.log           51%[=======================>                       ]  20.11M  1.31MB/s    eta 16s    pg2600.converter.log           52%[=======================>                       ]  20.42M  1.33MB/s    eta 15s    pg2600.converter.log           53%[========================>                      ]  20.71M  1.36MB/s    eta 15s    pg2600.converter.log           54%[========================>                      ]  21.03M  1.38MB/s    eta 15s    pg2600.converter.log           54%[========================>                      ]  21.30M  1.38MB/s    eta 15s    pg2600.converter.log           55%[=========================>                     ]  21.66M  1.41MB/s    eta 15s    pg2600.converter.log           56%[=========================>                     ]  21.94M  1.39MB/s    eta 13s    pg2600.converter.log           56%[=========================>                     ]  22.10M  1.35MB/s    eta 13s    pg2600.converter.log           57%[==========================>                    ]  22.49M  1.39MB/s    eta 13s    pg2600.converter.log           58%[==========================>                    ]  22.69M  1.35MB/s    eta 13s    pg2600.converter.log           58%[==========================>                    ]  22.85M  1.31MB/s    eta 13s    pg2600.converter.log           59%[==========================>                    ]  23.13M  1.26MB/s    eta 13s    pg2600.converter.log           60%[===========================>                   ]  23.46M  1.28MB/s    eta 13s    pg2600.converter.log           60%[===========================>                   ]  23.63M  1.24MB/s    eta 13s    pg2600.converter.log           61%[===========================>                   ]  23.83M  1.21MB/s    eta 13s    pg2600.converter.log           61%[============================>                  ]  24.02M  1.17MB/s    eta 13s    pg2600.converter.log           62%[============================>                  ]  24.24M  1.14MB/s    eta 12s    pg2600.converter.log           62%[============================>                  ]  24.41M  1.12MB/s    eta 12s    pg2600.converter.log           63%[============================>                  ]  24.61M  1.08MB/s    eta 12s    pg2600.converter.log           63%[============================>                  ]  24.83M  1.06MB/s    eta 12s    pg2600.converter.log           64%[=============================>                 ]  25.03M  1.03MB/s    eta 12s    pg2600.converter.log           64%[=============================>                 ]  25.27M  1016KB/s    eta 11s    pg2600.converter.log           65%[=============================>                 ]  25.50M  1.02MB/s    eta 11s    pg2600.converter.log           66%[==============================>                ]  25.72M  1004KB/s    eta 11s    pg2600.converter.log           66%[==============================>                ]  25.89M   966KB/s    eta 11s    pg2600.converter.log           67%[==============================>                ]  26.16M  1002KB/s    eta 11s    pg2600.converter.log           67%[==============================>                ]  26.35M   979KB/s    eta 10s    pg2600.converter.log           68%[===============================>               ]  26.60M   969KB/s    eta 10s    pg2600.converter.log           68%[===============================>               ]  26.80M   978KB/s    eta 10s    pg2600.converter.log           69%[===============================>               ]  26.99M   978KB/s    eta 10s    pg2600.converter.log           69%[===============================>               ]  27.22M   998KB/s    eta 10s    pg2600.converter.log           70%[================================>              ]  27.47M  1011KB/s    eta 9s     pg2600.converter.log           71%[================================>              ]  27.67M  1010KB/s    eta 9s     pg2600.converter.log           71%[================================>              ]  27.91M  1015KB/s    eta 9s     pg2600.converter.log           72%[================================>              ]  28.11M  1015KB/s    eta 9s     pg2600.converter.log           72%[=================================>             ]  28.35M  1014KB/s    eta 9s     pg2600.converter.log           73%[=================================>             ]  28.57M  1020KB/s    eta 9s     pg2600.converter.log           74%[=================================>             ]  28.82M  1.01MB/s    eta 9s     pg2600.converter.log           74%[==================================>            ]  29.02M  1015KB/s    eta 9s     pg2600.converter.log           75%[==================================>            ]  29.27M  1.01MB/s    eta 9s     pg2600.converter.log           75%[==================================>            ]  29.50M  1.01MB/s    eta 9s     pg2600.converter.log           76%[==================================>            ]  29.75M  1.02MB/s    eta 8s     pg2600.converter.log           77%[===================================>           ]  29.99M  1.01MB/s    eta 8s     pg2600.converter.log           77%[===================================>           ]  30.25M  1.03MB/s    eta 8s     pg2600.converter.log           78%[===================================>           ]  30.41M  1.02MB/s    eta 8s     pg2600.converter.log           78%[====================================>          ]  30.72M  1.05MB/s    eta 8s     pg2600.converter.log           79%[====================================>          ]  31.00M  1.07MB/s    eta 7s     pg2600.converter.log           80%[====================================>          ]  31.21M  1.07MB/s    eta 7s     pg2600.converter.log           80%[=====================================>         ]  31.52M  1.10MB/s    eta 7s     pg2600.converter.log           81%[=====================================>         ]  31.80M  1.12MB/s    eta 7s     pg2600.converter.log           82%[=====================================>         ]  32.05M  1.14MB/s    eta 7s     pg2600.converter.log           83%[======================================>        ]  32.39M  1.18MB/s    eta 5s     pg2600.converter.log           83%[======================================>        ]  32.69M  1.21MB/s    eta 5s     pg2600.converter.log           84%[======================================>        ]  32.92M  1.21MB/s    eta 5s     pg2600.converter.log           85%[======================================>        ]  33.10M  1.20MB/s    eta 5s     pg2600.converter.log           86%[=======================================>       ]  33.53M  1.26MB/s    eta 5s     pg2600.converter.log           86%[=======================================>       ]  33.80M  1.27MB/s    eta 4s     pg2600.converter.log           87%[========================================>      ]  34.08M  1.28MB/s    eta 4s     pg2600.converter.log           88%[========================================>      ]  34.35M  1.30MB/s    eta 4s     pg2600.converter.log           89%[========================================>      ]  34.64M  1.31MB/s    eta 4s     pg2600.converter.log           89%[=========================================>     ]  34.92M  1.33MB/s    eta 4s     pg2600.converter.log           90%[=========================================>     ]  35.24M  1.35MB/s    eta 3s     pg2600.converter.log           91%[=========================================>     ]  35.52M  1.36MB/s    eta 3s     pg2600.converter.log           92%[==========================================>    ]  35.83M  1.37MB/s    eta 3s     pg2600.converter.log           92%[==========================================>    ]  36.14M  1.39MB/s    eta 3s     pg2600.converter.log           93%[===========================================>   ]  36.46M  1.40MB/s    eta 3s     pg2600.converter.log           94%[===========================================>   ]  36.79M  1.41MB/s    eta 2s     pg2600.converter.log           95%[===========================================>   ]  37.10M  1.41MB/s    eta 2s     pg2600.converter.log           96%[============================================>  ]  37.42M  1.43MB/s    eta 2s     pg2600.converter.log           97%[============================================>  ]  37.78M  1.43MB/s    eta 2s     pg2600.converter.log           97%[=============================================> ]  38.10M  1.45MB/s    eta 2s     pg2600.converter.log           98%[=============================================> ]  38.47M  1.48MB/s    eta 0s     pg2600.converter.log           99%[=============================================> ]  38.80M  1.50MB/s    eta 0s     pg2600.converter.log          100%[==============================================>]  38.92M  1.53MB/s    in 32s     
+
+2022-05-24 11:49:15 (1.23 MB/s) - ‘/otus1/pg2600.converter.log’ saved [40809473/40809473]
+
+--2022-05-24 11:49:16--  https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+Resolving gutenberg.org (gutenberg.org)... 152.19.134.47
+Connecting to gutenberg.org (gutenberg.org)|152.19.134.47|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 40809473 (39M) [text/plain]
+Saving to: ‘/otus2/pg2600.converter.log’
+
+pg2600.converter.log            0%[                                               ]       0  --.-KB/s               pg2600.converter.log            0%[                                               ]  44.42K   165KB/s               pg2600.converter.log            0%[                                               ] 208.31K   367KB/s               pg2600.converter.log            1%[                                               ] 512.31K   594KB/s               pg2600.converter.log            1%[                                               ] 768.31K   671KB/s               pg2600.converter.log            2%[>                                              ] 896.31K   620KB/s               pg2600.converter.log            3%[>                                              ]   1.19M   703KB/s               pg2600.converter.log            3%[>                                              ]   1.41M   709KB/s               pg2600.converter.log            4%[>                                              ]   1.61M   711KB/s               pg2600.converter.log            4%[=>                                             ]   1.83M   716KB/s               pg2600.converter.log            5%[=>                                             ]   2.05M   740KB/s               pg2600.converter.log            5%[=>                                             ]   2.17M   720KB/s    eta 52s    pg2600.converter.log            6%[=>                                             ]   2.39M   737KB/s    eta 52s    pg2600.converter.log            6%[==>                                            ]   2.58M   743KB/s    eta 52s    pg2600.converter.log            7%[==>                                            ]   2.75M   788KB/s    eta 52s    pg2600.converter.log            7%[==>                                            ]   2.95M   817KB/s    eta 52s    pg2600.converter.log            7%[==>                                            ]   3.09M   805KB/s    eta 49s    pg2600.converter.log            8%[===>                                           ]   3.33M   790KB/s    eta 49s    pg2600.converter.log            9%[===>                                           ]   3.55M   774KB/s    eta 49s    pg2600.converter.log            9%[===>                                           ]   3.67M   789KB/s    eta 49s    pg2600.converter.log           10%[===>                                           ]   3.91M   790KB/s    eta 47s    pg2600.converter.log           10%[====>                                          ]   4.14M   797KB/s    eta 47s    pg2600.converter.log           11%[====>                                          ]   4.36M   804KB/s    eta 47s    pg2600.converter.log           11%[====>                                          ]   4.50M   813KB/s    eta 47s    pg2600.converter.log           12%[====>                                          ]   4.72M   809KB/s    eta 45s    pg2600.converter.log           12%[====>                                          ]   4.91M   828KB/s    eta 45s    pg2600.converter.log           13%[=====>                                         ]   5.08M   805KB/s    eta 45s    pg2600.converter.log           13%[=====>                                         ]   5.31M   825KB/s    eta 45s    pg2600.converter.log           14%[=====>                                         ]   5.45M   819KB/s    eta 45s    pg2600.converter.log           14%[=====>                                         ]   5.69M   836KB/s    eta 43s    pg2600.converter.log           14%[======>                                        ]   5.83M   816KB/s    eta 43s    pg2600.converter.log           15%[======>                                        ]   6.08M   822KB/s    eta 43s    pg2600.converter.log           16%[======>                                        ]   6.28M   850KB/s    eta 43s    pg2600.converter.log           16%[======>                                        ]   6.48M   853KB/s    eta 43s    pg2600.converter.log           17%[=======>                                       ]   6.70M   868KB/s    eta 41s    pg2600.converter.log           17%[=======>                                       ]   6.91M   873KB/s    eta 41s    pg2600.converter.log           18%[=======>                                       ]   7.14M   888KB/s    eta 41s    pg2600.converter.log           18%[=======>                                       ]   7.38M   898KB/s    eta 41s    pg2600.converter.log           19%[========>                                      ]   7.61M   934KB/s    eta 41s    pg2600.converter.log           20%[========>                                      ]   7.88M   957KB/s    eta 38s    pg2600.converter.log           20%[========>                                      ]   8.14M   979KB/s    eta 38s    pg2600.converter.log           21%[=========>                                     ]   8.42M  1012KB/s    eta 38s    pg2600.converter.log           22%[=========>                                     ]   8.72M  1.02MB/s    eta 38s    pg2600.converter.log           23%[=========>                                     ]   9.02M  1.08MB/s    eta 38s    pg2600.converter.log           23%[==========>                                    ]   9.30M  1.10MB/s    eta 34s    pg2600.converter.log           24%[==========>                                    ]   9.66M  1.15MB/s    eta 34s    pg2600.converter.log           25%[===========>                                   ]   9.95M  1.19MB/s    eta 34s    pg2600.converter.log           26%[===========>                                   ]  10.34M  1.24MB/s    eta 34s    pg2600.converter.log           27%[===========>                                   ]  10.73M  1.31MB/s    eta 34s    pg2600.converter.log           28%[============>                                  ]  11.00M  1.33MB/s    eta 30s    pg2600.converter.log           29%[============>                                  ]  11.38M  1.36MB/s    eta 30s    pg2600.converter.log           30%[=============>                                 ]  11.77M  1.41MB/s    eta 30s    pg2600.converter.log           31%[=============>                                 ]  12.11M  1.45MB/s    eta 30s    pg2600.converter.log           31%[=============>                                 ]  12.40M  1.49MB/s    eta 30s    pg2600.converter.log           32%[==============>                                ]  12.80M  1.53MB/s    eta 26s    pg2600.converter.log           33%[==============>                                ]  13.11M  1.54MB/s    eta 26s    pg2600.converter.log           34%[===============>                               ]  13.55M  1.59MB/s    eta 26s    pg2600.converter.log           35%[===============>                               ]  13.89M  1.60MB/s    eta 26s    pg2600.converter.log           36%[================>                              ]  14.34M  1.65MB/s    eta 26s    pg2600.converter.log           37%[================>                              ]  14.70M  1.66MB/s    eta 23s    pg2600.converter.log           39%[=================>                             ]  15.19M  1.69MB/s    eta 23s    pg2600.converter.log           39%[=================>                             ]  15.56M  1.72MB/s    eta 23s    pg2600.converter.log           41%[==================>                            ]  16.06M  1.75MB/s    eta 23s    pg2600.converter.log           42%[==================>                            ]  16.45M  1.76MB/s    eta 23s    pg2600.converter.log           43%[===================>                           ]  16.95M  1.82MB/s    eta 19s    pg2600.converter.log           44%[===================>                           ]  17.34M  1.87MB/s    eta 19s    pg2600.converter.log           45%[====================>                          ]  17.73M  1.83MB/s    eta 19s    pg2600.converter.log           46%[====================>                          ]  18.20M  1.89MB/s    eta 19s    pg2600.converter.log           47%[=====================>                         ]  18.64M  1.91MB/s    eta 19s    pg2600.converter.log           48%[=====================>                         ]  18.84M  1.89MB/s    eta 17s    pg2600.converter.log           49%[======================>                        ]  19.36M  1.94MB/s    eta 17s    pg2600.converter.log           50%[======================>                        ]  19.73M  1.93MB/s    eta 17s    pg2600.converter.log           51%[=======================>                       ]  20.03M  1.91MB/s    eta 17s    pg2600.converter.log           52%[=======================>                       ]  20.31M  1.88MB/s    eta 17s    pg2600.converter.log           53%[========================>                      ]  20.70M  1.88MB/s    eta 15s    pg2600.converter.log           53%[========================>                      ]  21.02M  1.84MB/s    eta 15s    pg2600.converter.log           55%[========================>                      ]  21.42M  1.83MB/s    eta 15s    pg2600.converter.log           55%[=========================>                     ]  21.73M  1.81MB/s    eta 15s    pg2600.converter.log           56%[=========================>                     ]  21.98M  1.77MB/s    eta 15s    pg2600.converter.log           57%[==========================>                    ]  22.45M  1.78MB/s    eta 13s    pg2600.converter.log           58%[==========================>                    ]  22.78M  1.77MB/s    eta 13s    pg2600.converter.log           59%[==========================>                    ]  23.17M  1.77MB/s    eta 13s    pg2600.converter.log           60%[===========================>                   ]  23.53M  1.76MB/s    eta 13s    pg2600.converter.log           61%[===========================>                   ]  23.86M  1.69MB/s    eta 13s    pg2600.converter.log           62%[============================>                  ]  24.31M  1.69MB/s    eta 12s    pg2600.converter.log           63%[============================>                  ]  24.66M  1.75MB/s    eta 12s    pg2600.converter.log           64%[=============================>                 ]  25.05M  1.69MB/s    eta 12s    pg2600.converter.log           65%[=============================>                 ]  25.42M  1.70MB/s    eta 12s    pg2600.converter.log           66%[==============================>                ]  25.83M  1.74MB/s    eta 12s    pg2600.converter.log           67%[==============================>                ]  26.17M  1.75MB/s    eta 10s    pg2600.converter.log           68%[===============================>               ]  26.53M  1.76MB/s    eta 10s    pg2600.converter.log           69%[===============================>               ]  26.94M  1.78MB/s    eta 10s    pg2600.converter.log           70%[===============================>               ]  27.28M  1.77MB/s    eta 10s    pg2600.converter.log           71%[================================>              ]  27.72M  1.80MB/s    eta 10s    pg2600.converter.log           72%[================================>              ]  28.06M  1.80MB/s    eta 8s     pg2600.converter.log           73%[=================================>             ]  28.45M  1.79MB/s    eta 8s     pg2600.converter.log           74%[=================================>             ]  28.81M  1.78MB/s    eta 8s     pg2600.converter.log           75%[==================================>            ]  29.20M  1.79MB/s    eta 8s     pg2600.converter.log           75%[==================================>            ]  29.52M  1.78MB/s    eta 8s     pg2600.converter.log           76%[===================================>           ]  29.84M  1.78MB/s    eta 7s     pg2600.converter.log           77%[===================================>           ]  29.98M  1.69MB/s    eta 7s     pg2600.converter.log           78%[===================================>           ]  30.48M  1.72MB/s    eta 7s     pg2600.converter.log           79%[====================================>          ]  30.77M  1.70MB/s    eta 7s     pg2600.converter.log           79%[====================================>          ]  31.08M  1.69MB/s    eta 7s     pg2600.converter.log           80%[====================================>          ]  31.38M  1.66MB/s    eta 6s     pg2600.converter.log           81%[=====================================>         ]  31.65M  1.63MB/s    eta 6s     pg2600.converter.log           82%[=====================================>         ]  31.97M  1.62MB/s    eta 6s     pg2600.converter.log           82%[======================================>        ]  32.30M  1.60MB/s    eta 6s     pg2600.converter.log           83%[======================================>        ]  32.65M  1.61MB/s    eta 6s     pg2600.converter.log           84%[======================================>        ]  32.77M  1.50MB/s    eta 5s     pg2600.converter.log           85%[=======================================>       ]  33.23M  1.53MB/s    eta 5s     pg2600.converter.log           86%[=======================================>       ]  33.48M  1.50MB/s    eta 5s     pg2600.converter.log           86%[=======================================>       ]  33.73M  1.45MB/s    eta 5s     pg2600.converter.log           87%[========================================>      ]  34.02M  1.44MB/s    eta 5s     pg2600.converter.log           88%[========================================>      ]  34.29M  1.43MB/s    eta 3s     pg2600.converter.log           88%[========================================>      ]  34.43M  1.38MB/s    eta 3s     pg2600.converter.log           89%[========================================>      ]  34.70M  1.41MB/s    eta 3s     pg2600.converter.log           89%[=========================================>     ]  34.92M  1.33MB/s    eta 3s     pg2600.converter.log           90%[=========================================>     ]  35.11M  1.31MB/s    eta 3s     pg2600.converter.log           90%[=========================================>     ]  35.31M  1.28MB/s    eta 3s     pg2600.converter.log           91%[=========================================>     ]  35.55M  1.26MB/s    eta 3s     pg2600.converter.log           91%[==========================================>    ]  35.73M  1.22MB/s    eta 3s     pg2600.converter.log           92%[==========================================>    ]  35.94M  1.19MB/s    eta 3s     pg2600.converter.log           92%[==========================================>    ]  36.19M  1.17MB/s    eta 3s     pg2600.converter.log           93%[==========================================>    ]  36.39M  1.15MB/s    eta 2s     pg2600.converter.log           94%[===========================================>   ]  36.66M  1.17MB/s    eta 2s     pg2600.converter.log           94%[===========================================>   ]  36.88M  1.10MB/s    eta 2s     pg2600.converter.log           95%[===========================================>   ]  37.14M  1.10MB/s    eta 2s     pg2600.converter.log           95%[============================================>  ]  37.36M  1.09MB/s    eta 2s     pg2600.converter.log           96%[============================================>  ]  37.60M  1.08MB/s    eta 1s     pg2600.converter.log           97%[============================================>  ]  37.81M  1.06MB/s    eta 1s     pg2600.converter.log           97%[============================================>  ]  38.04M  1.12MB/s    eta 1s     pg2600.converter.log           98%[=============================================> ]  38.28M  1.08MB/s    eta 1s     pg2600.converter.log           98%[=============================================> ]  38.52M  1.08MB/s    eta 1s     pg2600.converter.log           99%[=============================================> ]  38.78M  1.09MB/s    eta 0s     pg2600.converter.log          100%[==============================================>]  38.92M  1.10MB/s    in 30s     
+
+2022-05-24 11:49:47 (1.31 MB/s) - ‘/otus2/pg2600.converter.log’ saved [40809473/40809473]
+
+--2022-05-24 11:49:47--  https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+Resolving gutenberg.org (gutenberg.org)... 152.19.134.47
+Connecting to gutenberg.org (gutenberg.org)|152.19.134.47|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 40809473 (39M) [text/plain]
+Saving to: ‘/otus3/pg2600.converter.log’
+
+pg2600.converter.log            0%[                                               ]       0  --.-KB/s               pg2600.converter.log            0%[                                               ]  44.42K   166KB/s               pg2600.converter.log            0%[                                               ] 205.52K   367KB/s               pg2600.converter.log            0%[                                               ] 349.52K   413KB/s               pg2600.converter.log            1%[                                               ] 701.52K   616KB/s               pg2600.converter.log            2%[>                                              ] 925.52K   634KB/s               pg2600.converter.log            2%[>                                              ]   1.12M   650KB/s               pg2600.converter.log            3%[>                                              ]   1.33M   677KB/s               pg2600.converter.log            3%[>                                              ]   1.50M   671KB/s               pg2600.converter.log            4%[>                                              ]   1.64M   675KB/s               pg2600.converter.log            4%[=>                                             ]   1.68M   631KB/s               pg2600.converter.log            4%[=>                                             ]   1.89M   658KB/s               pg2600.converter.log            5%[=>                                             ]   1.98M   637KB/s    eta 59s    pg2600.converter.log            5%[=>                                             ]   2.11M   635KB/s    eta 59s    pg2600.converter.log            5%[=>                                             ]   2.20M   620KB/s    eta 59s    pg2600.converter.log            6%[=>                                             ]   2.34M   662KB/s    eta 59s    pg2600.converter.log            6%[=>                                             ]   2.48M   649KB/s    eta 59s    pg2600.converter.log            6%[==>                                            ]   2.58M   642KB/s    eta 61s    pg2600.converter.log            6%[==>                                            ]   2.72M   607KB/s    eta 61s    pg2600.converter.log            7%[==>                                            ]   2.81M   577KB/s    eta 61s    pg2600.converter.log            7%[==>                                            ]   2.95M   594KB/s    eta 61s    pg2600.converter.log            7%[==>                                            ]   3.06M   558KB/s    eta 61s    pg2600.converter.log            8%[==>                                            ]   3.20M   560KB/s    eta 61s    pg2600.converter.log            8%[==>                                            ]   3.29M   548KB/s    eta 61s    pg2600.converter.log            8%[===>                                           ]   3.43M   551KB/s    eta 61s    pg2600.converter.log            9%[===>                                           ]   3.53M   540KB/s    eta 61s    pg2600.converter.log            9%[===>                                           ]   3.67M   549KB/s    eta 61s    pg2600.converter.log            9%[===>                                           ]   3.78M   546KB/s    eta 61s    pg2600.converter.log           10%[===>                                           ]   3.92M   559KB/s    eta 61s    pg2600.converter.log           10%[===>                                           ]   4.03M   557KB/s    eta 61s    pg2600.converter.log           10%[====>                                          ]   4.17M   567KB/s    eta 61s    pg2600.converter.log           10%[====>                                          ]   4.28M   567KB/s    eta 61s    pg2600.converter.log           11%[====>                                          ]   4.43M   577KB/s    eta 59s    pg2600.converter.log           11%[====>                                          ]   4.56M   573KB/s    eta 59s    pg2600.converter.log           12%[====>                                          ]   4.70M   581KB/s    eta 59s    pg2600.converter.log           12%[====>                                          ]   4.83M   587KB/s    eta 59s    pg2600.converter.log           12%[=====>                                         ]   5.01M   594KB/s    eta 59s    pg2600.converter.log           13%[=====>                                         ]   5.15M   597KB/s    eta 57s    pg2600.converter.log           13%[=====>                                         ]   5.29M   610KB/s    eta 57s    pg2600.converter.log           13%[=====>                                         ]   5.42M   607KB/s    eta 57s    pg2600.converter.log           14%[=====>                                         ]   5.61M   629KB/s    eta 57s    pg2600.converter.log           14%[=====>                                         ]   5.74M   638KB/s    eta 57s    pg2600.converter.log           15%[======>                                        ]   5.95M   653KB/s    eta 55s    pg2600.converter.log           15%[======>                                        ]   6.17M   674KB/s    eta 55s    pg2600.converter.log           16%[======>                                        ]   6.33M   686KB/s    eta 55s    pg2600.converter.log           16%[======>                                        ]   6.56M   728KB/s    eta 55s    pg2600.converter.log           17%[=======>                                       ]   6.75M   745KB/s    eta 55s    pg2600.converter.log           18%[=======>                                       ]   7.01M   785KB/s    eta 50s    pg2600.converter.log           18%[=======>                                       ]   7.22M   804KB/s    eta 50s    pg2600.converter.log           19%[========>                                      ]   7.53M   855KB/s    eta 50s    pg2600.converter.log           19%[========>                                      ]   7.77M   889KB/s    eta 50s    pg2600.converter.log           20%[========>                                      ]   8.09M   955KB/s    eta 50s    pg2600.converter.log           21%[=========>                                     ]   8.36M   984KB/s    eta 44s    pg2600.converter.log           22%[=========>                                     ]   8.62M  1022KB/s    eta 44s    pg2600.converter.log           23%[=========>                                     ]   9.01M  1.09MB/s    eta 44s    pg2600.converter.log           24%[==========>                                    ]   9.36M  1.14MB/s    eta 44s    pg2600.converter.log           25%[==========>                                    ]   9.81M  1.26MB/s    eta 44s    pg2600.converter.log           25%[===========>                                   ]  10.06M  1.24MB/s    eta 38s    pg2600.converter.log           27%[===========>                                   ]  10.59M  1.35MB/s    eta 38s    pg2600.converter.log           27%[============>                                  ]  10.88M  1.38MB/s    eta 38s    pg2600.converter.log           28%[============>                                  ]  11.25M  1.44MB/s    eta 38s    pg2600.converter.log           29%[============>                                  ]  11.53M  1.46MB/s    eta 38s    pg2600.converter.log           30%[=============>                                 ]  11.90M  1.50MB/s    eta 32s    pg2600.converter.log           31%[=============>                                 ]  12.28M  1.54MB/s    eta 32s    pg2600.converter.log           32%[==============>                                ]  12.75M  1.60MB/s    eta 32s    pg2600.converter.log           33%[==============>                                ]  13.08M  1.62MB/s    eta 32s    pg2600.converter.log           34%[===============>                               ]  13.56M  1.68MB/s    eta 32s    pg2600.converter.log           35%[===============>                               ]  13.89M  1.70MB/s    eta 28s    pg2600.converter.log           36%[================>                              ]  14.11M  1.65MB/s    eta 28s    pg2600.converter.log           37%[================>                              ]  14.61M  1.70MB/s    eta 28s    pg2600.converter.log           38%[=================>                             ]  14.94M  1.69MB/s    eta 28s    pg2600.converter.log           39%[=================>                             ]  15.22M  1.64MB/s    eta 28s    pg2600.converter.log           40%[=================>                             ]  15.58M  1.71MB/s    eta 25s    pg2600.converter.log           40%[==================>                            ]  15.86M  1.60MB/s    eta 25s    pg2600.converter.log           41%[==================>                            ]  16.22M  1.63MB/s    eta 25s    pg2600.converter.log           42%[==================>                            ]  16.53M  1.62MB/s    eta 25s    pg2600.converter.log           43%[===================>                           ]  16.86M  1.61MB/s    eta 25s    pg2600.converter.log           44%[===================>                           ]  17.22M  1.60MB/s    eta 22s    pg2600.converter.log           45%[====================>                          ]  17.56M  1.62MB/s    eta 22s    pg2600.converter.log           46%[====================>                          ]  17.90M  1.59MB/s    eta 22s    pg2600.converter.log           46%[====================>                          ]  18.01M  1.51MB/s    eta 22s    pg2600.converter.log           47%[=====================>                         ]  18.48M  1.53MB/s    eta 22s    pg2600.converter.log           48%[=====================>                         ]  18.72M  1.49MB/s    eta 20s    pg2600.converter.log           48%[=====================>                         ]  19.01M  1.51MB/s    eta 20s    pg2600.converter.log           49%[======================>                        ]  19.25M  1.41MB/s    eta 20s    pg2600.converter.log           50%[======================>                        ]  19.51M  1.43MB/s    eta 20s    pg2600.converter.log           50%[======================>                        ]  19.78M  1.41MB/s    eta 20s    pg2600.converter.log           51%[=======================>                       ]  20.06M  1.40MB/s    eta 18s    pg2600.converter.log           52%[=======================>                       ]  20.34M  1.39MB/s    eta 18s    pg2600.converter.log           53%[=======================>                       ]  20.64M  1.37MB/s    eta 18s    pg2600.converter.log           53%[========================>                      ]  20.93M  1.36MB/s    eta 18s    pg2600.converter.log           54%[========================>                      ]  21.23M  1.34MB/s    eta 18s    pg2600.converter.log           55%[========================>                      ]  21.53M  1.32MB/s    eta 17s    pg2600.converter.log           56%[=========================>                     ]  21.83M  1.32MB/s    eta 17s    pg2600.converter.log           56%[=========================>                     ]  22.14M  1.32MB/s    eta 17s    pg2600.converter.log           57%[==========================>                    ]  22.43M  1.36MB/s    eta 17s    pg2600.converter.log           58%[==========================>                    ]  22.73M  1.30MB/s    eta 17s    pg2600.converter.log           59%[==========================>                    ]  23.03M  1.32MB/s    eta 15s    pg2600.converter.log           59%[===========================>                   ]  23.33M  1.32MB/s    eta 15s    pg2600.converter.log           60%[===========================>                   ]  23.62M  1.35MB/s    eta 15s    pg2600.converter.log           61%[===========================>                   ]  23.90M  1.35MB/s    eta 15s    pg2600.converter.log           62%[============================>                  ]  24.17M  1.36MB/s    eta 15s    pg2600.converter.log           62%[============================>                  ]  24.45M  1.36MB/s    eta 14s    pg2600.converter.log           63%[============================>                  ]  24.75M  1.37MB/s    eta 14s    pg2600.converter.log           64%[=============================>                 ]  25.04M  1.37MB/s    eta 14s    pg2600.converter.log           65%[=============================>                 ]  25.33M  1.37MB/s    eta 14s    pg2600.converter.log           65%[=============================>                 ]  25.62M  1.38MB/s    eta 14s    pg2600.converter.log           66%[==============================>                ]  25.90M  1.37MB/s    eta 12s    pg2600.converter.log           67%[==============================>                ]  26.17M  1.37MB/s    eta 12s    pg2600.converter.log           68%[==============================>                ]  26.47M  1.38MB/s    eta 12s    pg2600.converter.log           68%[===============================>               ]  26.76M  1.38MB/s    eta 12s    pg2600.converter.log           69%[===============================>               ]  27.08M  1.39MB/s    eta 12s    pg2600.converter.log           70%[================================>              ]  27.39M  1.39MB/s    eta 11s    pg2600.converter.log           71%[================================>              ]  27.69M  1.40MB/s    eta 11s    pg2600.converter.log           71%[================================>              ]  27.88M  1.37MB/s    eta 11s    pg2600.converter.log           72%[=================================>             ]  28.28M  1.41MB/s    eta 11s    pg2600.converter.log           73%[=================================>             ]  28.58M  1.41MB/s    eta 11s    pg2600.converter.log           74%[=================================>             ]  28.87M  1.41MB/s    eta 9s     pg2600.converter.log           75%[==================================>            ]  29.26M  1.44MB/s    eta 9s     pg2600.converter.log           76%[==================================>            ]  29.64M  1.47MB/s    eta 9s     pg2600.converter.log           77%[===================================>           ]  29.98M  1.47MB/s    eta 9s     pg2600.converter.log           78%[===================================>           ]  30.40M  1.51MB/s    eta 9s     pg2600.converter.log           79%[====================================>          ]  30.75M  1.51MB/s    eta 7s     pg2600.converter.log           80%[====================================>          ]  31.18M  1.56MB/s    eta 7s     pg2600.converter.log           81%[=====================================>         ]  31.56M  1.58MB/s    eta 7s     pg2600.converter.log           82%[=====================================>         ]  32.03M  1.63MB/s    eta 7s     pg2600.converter.log           83%[======================================>        ]  32.42M  1.65MB/s    eta 7s     pg2600.converter.log           84%[======================================>        ]  32.93M  1.71MB/s    eta 5s     pg2600.converter.log           85%[=======================================>       ]  33.39M  1.77MB/s    eta 5s     pg2600.converter.log           87%[=======================================>       ]  33.92M  1.83MB/s    eta 5s     pg2600.converter.log           88%[========================================>      ]  34.39M  1.88MB/s    eta 5s     pg2600.converter.log           89%[=========================================>     ]  34.92M  1.95MB/s    eta 5s     pg2600.converter.log           90%[=========================================>     ]  35.31M  1.99MB/s    eta 3s     pg2600.converter.log           92%[==========================================>    ]  36.00M  2.09MB/s    eta 3s     pg2600.converter.log           94%[===========================================>   ]  36.61M  2.19MB/s    eta 3s     pg2600.converter.log           94%[===========================================>   ]  36.90M  1.77MB/s    eta 2s     pg2600.converter.log           99%[=============================================> ]  38.61M  2.09MB/s    eta 2s     pg2600.converter.log          100%[==============================================>]  38.92M  2.08MB/s    in 31s     
+
+2022-05-24 11:50:19 (1.26 MB/s) - ‘/otus3/pg2600.converter.log’ saved [40809473/40809473]
+
+--2022-05-24 11:50:19--  https://gutenberg.org/cache/epub/2600/pg2600.converter.log
+Resolving gutenberg.org (gutenberg.org)... 152.19.134.47
+Connecting to gutenberg.org (gutenberg.org)|152.19.134.47|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 40809473 (39M) [text/plain]
+Saving to: ‘/otus4/pg2600.converter.log’
+
+pg2600.converter.log            0%[                                               ]       0  --.-KB/s               pg2600.converter.log            0%[                                               ]  37.72K   142KB/s               pg2600.converter.log            0%[                                               ] 213.72K   358KB/s               pg2600.converter.log            1%[                                               ] 469.72K   558KB/s               pg2600.converter.log            1%[                                               ] 581.72K   558KB/s               pg2600.converter.log            1%[                                               ] 789.72K   617KB/s               pg2600.converter.log            2%[>                                              ] 965.72K   616KB/s               pg2600.converter.log            2%[>                                              ]   1.13M   625KB/s               pg2600.converter.log            3%[>                                              ]   1.32M   629KB/s               pg2600.converter.log            3%[>                                              ]   1.50M   634KB/s               pg2600.converter.log            4%[=>                                             ]   1.71M   640KB/s               pg2600.converter.log            4%[=>                                             ]   1.91M   650KB/s    eta 58s    pg2600.converter.log            5%[=>                                             ]   2.11M   655KB/s    eta 58s    pg2600.converter.log            5%[=>                                             ]   2.32M   658KB/s    eta 58s    pg2600.converter.log            6%[==>                                            ]   2.52M   703KB/s    eta 58s    pg2600.converter.log            7%[==>                                            ]   2.72M   719KB/s    eta 56s    pg2600.converter.log            7%[==>                                            ]   2.93M   700KB/s    eta 56s    pg2600.converter.log            8%[==>                                            ]   3.13M   695KB/s    eta 56s    pg2600.converter.log            8%[===>                                           ]   3.33M   707KB/s    eta 56s    pg2600.converter.log            9%[===>                                           ]   3.52M   713KB/s    eta 53s    pg2600.converter.log            9%[===>                                           ]   3.65M   697KB/s    eta 53s    pg2600.converter.log            9%[===>                                           ]   3.86M   714KB/s    eta 53s    pg2600.converter.log           10%[===>                                           ]   4.07M   724KB/s    eta 53s    pg2600.converter.log           10%[====>                                          ]   4.26M   744KB/s    eta 51s    pg2600.converter.log           11%[====>                                          ]   4.40M   721KB/s    eta 51s    pg2600.converter.log           11%[====>                                          ]   4.59M   749KB/s    eta 51s    pg2600.converter.log           12%[====>                                          ]   4.72M   739KB/s    eta 51s    pg2600.converter.log           12%[====>                                          ]   4.94M   748KB/s    eta 51s    pg2600.converter.log           13%[=====>                                         ]   5.08M   739KB/s    eta 49s    pg2600.converter.log           13%[=====>                                         ]   5.30M   752KB/s    eta 49s    pg2600.converter.log           14%[=====>                                         ]   5.46M   771KB/s    eta 49s    pg2600.converter.log           14%[=====>                                         ]   5.68M   785KB/s    eta 49s    pg2600.converter.log           14%[======>                                        ]   5.83M   781KB/s    eta 49s    pg2600.converter.log           15%[======>                                        ]   6.08M   823KB/s    eta 46s    pg2600.converter.log           16%[======>                                        ]   6.25M   827KB/s    eta 46s    pg2600.converter.log           16%[======>                                        ]   6.52M   862KB/s    eta 46s    pg2600.converter.log           17%[=======>                                       ]   6.72M   867KB/s    eta 46s    pg2600.converter.log           18%[=======>                                       ]   7.00M   897KB/s    eta 46s    pg2600.converter.log           18%[=======>                                       ]   7.21M   902KB/s    eta 42s    pg2600.converter.log           19%[========>                                      ]   7.54M   976KB/s    eta 42s    pg2600.converter.log           19%[========>                                      ]   7.77M   993KB/s    eta 42s    pg2600.converter.log           20%[========>                                      ]   7.93M   974KB/s    eta 42s    pg2600.converter.log           21%[=========>                                     ]   8.33M  1.02MB/s    eta 42s    pg2600.converter.log           22%[=========>                                     ]   8.58M  1.04MB/s    eta 38s    pg2600.converter.log           22%[=========>                                     ]   8.79M  1.06MB/s    eta 38s    pg2600.converter.log           23%[=========>                                     ]   9.04M  1.10MB/s    eta 38s    pg2600.converter.log           23%[==========>                                    ]   9.29M  1.10MB/s    eta 38s    pg2600.converter.log           24%[==========>                                    ]   9.58M  1.13MB/s    eta 38s    pg2600.converter.log           25%[==========>                                    ]   9.85M  1.14MB/s    eta 35s    pg2600.converter.log           26%[===========>                                   ]  10.15M  1.18MB/s    eta 35s    pg2600.converter.log           26%[===========>                                   ]  10.41M  1.19MB/s    eta 35s    pg2600.converter.log           27%[===========>                                   ]  10.75M  1.23MB/s    eta 35s    pg2600.converter.log           28%[============>                                  ]  11.02M  1.23MB/s    eta 35s    pg2600.converter.log           29%[============>                                  ]  11.33M  1.25MB/s    eta 31s    pg2600.converter.log           29%[=============>                                 ]  11.63M  1.26MB/s    eta 31s    pg2600.converter.log           30%[=============>                                 ]  11.96M  1.29MB/s    eta 31s    pg2600.converter.log           31%[=============>                                 ]  12.25M  1.34MB/s    eta 31s    pg2600.converter.log           32%[==============>                                ]  12.60M  1.31MB/s    eta 31s    pg2600.converter.log           33%[==============>                                ]  12.88M  1.33MB/s    eta 28s    pg2600.converter.log           33%[==============>                                ]  13.22M  1.37MB/s    eta 28s    pg2600.converter.log           34%[===============>                               ]  13.52M  1.37MB/s    eta 28s    pg2600.converter.log           35%[===============>                               ]  13.86M  1.40MB/s    eta 28s    pg2600.converter.log           35%[===============>                               ]  13.95M  1.32MB/s    eta 28s    pg2600.converter.log           37%[================>                              ]  14.49M  1.40MB/s    eta 25s    pg2600.converter.log           37%[================>                              ]  14.79M  1.41MB/s    eta 25s    pg2600.converter.log           38%[=================>                             ]  15.13M  1.43MB/s    eta 25s    pg2600.converter.log           39%[=================>                             ]  15.43M  1.42MB/s    eta 25s    pg2600.converter.log           40%[==================>                            ]  15.77M  1.44MB/s    eta 25s    pg2600.converter.log           41%[==================>                            ]  16.01M  1.42MB/s    eta 23s    pg2600.converter.log           42%[==================>                            ]  16.40M  1.43MB/s    eta 23s    pg2600.converter.log           42%[===================>                           ]  16.67M  1.43MB/s    eta 23s    pg2600.converter.log           43%[===================>                           ]  17.04M  1.45MB/s    eta 23s    pg2600.converter.log           44%[===================>                           ]  17.31M  1.45MB/s    eta 23s    pg2600.converter.log           45%[====================>                          ]  17.68M  1.45MB/s    eta 21s    pg2600.converter.log           46%[====================>                          ]  17.97M  1.45MB/s    eta 21s    pg2600.converter.log           47%[=====================>                         ]  18.33M  1.45MB/s    eta 21s    pg2600.converter.log           47%[=====================>                         ]  18.61M  1.45MB/s    eta 21s    pg2600.converter.log           48%[=====================>                         ]  18.95M  1.54MB/s    eta 21s    pg2600.converter.log           49%[======================>                        ]  19.25M  1.48MB/s    eta 19s    pg2600.converter.log           50%[======================>                        ]  19.58M  1.49MB/s    eta 19s    pg2600.converter.log           51%[=======================>                       ]  19.92M  1.50MB/s    eta 19s    pg2600.converter.log           51%[=======================>                       ]  20.22M  1.49MB/s    eta 19s    pg2600.converter.log           52%[=======================>                       ]  20.59M  1.52MB/s    eta 19s    pg2600.converter.log           53%[========================>                      ]  20.91M  1.53MB/s    eta 17s    pg2600.converter.log           54%[========================>                      ]  21.29M  1.56MB/s    eta 17s    pg2600.converter.log           55%[=========================>                     ]  21.68M  1.56MB/s    eta 17s    pg2600.converter.log           55%[=========================>                     ]  21.77M  1.44MB/s    eta 17s    pg2600.converter.log           56%[=========================>                     ]  22.15M  1.47MB/s    eta 17s    pg2600.converter.log           58%[==========================>                    ]  22.72M  1.54MB/s    eta 15s    pg2600.converter.log           59%[==========================>                    ]  22.99M  1.53MB/s    eta 15s    pg2600.converter.log           59%[===========================>                   ]  23.33M  1.53MB/s    eta 15s    pg2600.converter.log           60%[===========================>                   ]  23.68M  1.55MB/s    eta 15s    pg2600.converter.log           61%[===========================>                   ]  24.00M  1.54MB/s    eta 15s    pg2600.converter.log           62%[============================>                  ]  24.32M  1.53MB/s    eta 13s    pg2600.converter.log           63%[============================>                  ]  24.72M  1.54MB/s    eta 13s    pg2600.converter.log           64%[=============================>                 ]  25.08M  1.55MB/s    eta 13s    pg2600.converter.log           65%[=============================>                 ]  25.46M  1.55MB/s    eta 13s    pg2600.converter.log           66%[==============================>                ]  25.83M  1.57MB/s    eta 13s    pg2600.converter.log           67%[==============================>                ]  26.22M  1.57MB/s    eta 11s    pg2600.converter.log           68%[===============================>               ]  26.54M  1.56MB/s    eta 11s    pg2600.converter.log           69%[===============================>               ]  26.93M  1.57MB/s    eta 11s    pg2600.converter.log           70%[===============================>               ]  27.32M  1.72MB/s    eta 11s    pg2600.converter.log           71%[================================>              ]  27.75M  1.75MB/s    eta 11s    pg2600.converter.log           72%[================================>              ]  28.10M  1.67MB/s    eta 9s     pg2600.converter.log           73%[=================================>             ]  28.47M  1.72MB/s    eta 9s     pg2600.converter.log           74%[=================================>             ]  28.84M  1.72MB/s    eta 9s     pg2600.converter.log           75%[==================================>            ]  29.21M  1.74MB/s    eta 9s     pg2600.converter.log           75%[==================================>            ]  29.56M  1.76MB/s    eta 9s     pg2600.converter.log           76%[===================================>           ]  29.94M  1.72MB/s    eta 7s     pg2600.converter.log           77%[===================================>           ]  30.13M  1.68MB/s    eta 7s     pg2600.converter.log           78%[===================================>           ]  30.51M  1.69MB/s    eta 7s     pg2600.converter.log           79%[====================================>          ]  31.02M  1.73MB/s    eta 7s     pg2600.converter.log           80%[====================================>          ]  31.27M  1.70MB/s    eta 7s     pg2600.converter.log           81%[=====================================>         ]  31.63M  1.69MB/s    eta 6s     pg2600.converter.log           82%[=====================================>         ]  31.93M  1.67MB/s    eta 6s     pg2600.converter.log           82%[=====================================>         ]  32.26M  1.66MB/s    eta 6s     pg2600.converter.log           83%[======================================>        ]  32.65M  1.67MB/s    eta 6s     pg2600.converter.log           84%[======================================>        ]  32.99M  1.65MB/s    eta 6s     pg2600.converter.log           85%[=======================================>       ]  33.40M  1.66MB/s    eta 4s     pg2600.converter.log           86%[=======================================>       ]  33.71M  1.56MB/s    eta 4s     pg2600.converter.log           87%[========================================>      ]  34.24M  1.61MB/s    eta 4s     pg2600.converter.log           88%[========================================>      ]  34.47M  1.56MB/s    eta 4s     pg2600.converter.log           89%[========================================>      ]  34.77M  1.55MB/s    eta 4s     pg2600.converter.log           90%[=========================================>     ]  35.05M  1.57MB/s    eta 3s     pg2600.converter.log           90%[=========================================>     ]  35.35M  1.61MB/s    eta 3s     pg2600.converter.log           91%[==========================================>    ]  35.66M  1.52MB/s    eta 3s     pg2600.converter.log           92%[==========================================>    ]  35.97M  1.51MB/s    eta 3s     pg2600.converter.log           93%[==========================================>    ]  36.29M  1.50MB/s    eta 3s     pg2600.converter.log           94%[===========================================>   ]  36.60M  1.50MB/s    eta 2s     pg2600.converter.log           94%[===========================================>   ]  36.93M  1.48MB/s    eta 2s     pg2600.converter.log           95%[===========================================>   ]  37.23M  1.47MB/s    eta 2s     pg2600.converter.log           96%[============================================>  ]  37.57M  1.47MB/s    eta 2s     pg2600.converter.log           97%[============================================>  ]  37.82M  1.44MB/s    eta 2s     pg2600.converter.log           97%[============================================>  ]  38.00M  1.39MB/s    eta 1s     pg2600.converter.log           98%[=============================================> ]  38.22M  1.41MB/s    eta 1s     pg2600.converter.log           99%[=============================================> ]  38.66M  1.39MB/s    eta 1s     pg2600.converter.log           99%[=============================================> ]  38.91M  1.38MB/s    eta 1s     pg2600.converter.log          100%[==============================================>]  38.92M  1.38MB/s    in 31s     
+
+2022-05-24 11:50:51 (1.26 MB/s) - ‘/otus4/pg2600.converter.log’ saved [40809473/40809473]
+
+]0;root@server:~[root@server ~]# ls -l /otus*
+/otus1:
+total 22020
+-rw-r--r--. 1 root root 40809473 May  2 08:01 pg2600.converter.log
+
+/otus2:
+total 17972
+-rw-r--r--. 1 root root 40809473 May  2 08:01 pg2600.converter.log
+
+/otus3:
+total 10949
+-rw-r--r--. 1 root root 40809473 May  2 08:01 pg2600.converter.log
+
+/otus4:
+total 39881
+-rw-r--r--. 1 root root 40809473 May  2 08:01 pg2600.converter.log
+]0;root@server:~[root@server ~]# zfs list
+NAME    USED  AVAIL     REFER  MOUNTPOINT
+otus1  21.6M   330M     21.5M  /otus1
+otus2  17.7M   334M     17.6M  /otus2
+otus3  10.8M   341M     10.7M  /otus3
+otus4  39.1M   313M     39.0M  /otus4
+]0;root@server:~[root@server ~]# zfs get all |grep compressratio | grep -v ref
+otus1  compressratio         1.81x                  -
+otus2  compressratio         2.22x                  -
+otus3  compressratio         3.64x                  -
+otus4  compressratio         1.00x                  -
+]0;root@server:~[root@server ~]# zfs get all |grep compressratio | grep -v ref[K[K[K[K[K[K[K[K[K[K[K[K[K[K
+otus1  [01;31m[Kcompressratio[m[K         1.81x                  -
+otus1  ref[01;31m[Kcompressratio[m[K      1.81x                  -
+otus2  [01;31m[Kcompressratio[m[K         2.22x                  -
+otus2  ref[01;31m[Kcompressratio[m[K      2.22x                  -
+otus3  [01;31m[Kcompressratio[m[K         3.64x                  -
+otus3  ref[01;31m[Kcompressratio[m[K      3.65x                  -
+otus4  [01;31m[Kcompressratio[m[K         1.00x                  -
+otus4  ref[01;31m[Kcompressratio[m[K      1.00x                  -
+]0;root@server:~[root@server ~]# wget -O archive.tar.gz --no-check-certificate 'https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hhLJivOAt60yukkg&export=download'
+--2022-05-24 11:52:44--  https://drive.google.com/u/0/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download
+Resolving drive.google.com (drive.google.com)... 74.125.205.194
+Connecting to drive.google.com (drive.google.com)|74.125.205.194|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://drive.google.com/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download [following]
+--2022-05-24 11:52:45--  https://drive.google.com/uc?id=1KRBNW33QWqbvbVHa3hLJivOAt60yukkg&export=download
+Reusing existing connection to drive.google.com:443.
+HTTP request sent, awaiting response... 303 See Other
+Location: https://doc-0c-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/i6refhm8n5api8fk10rb6d9jlearqt1g/1653393150000/16189157874053420687/*/1KRBNW33QWqbvbVHa3hLJivOAt60yukkg?e=download [following]
+Warning: wildcards not supported in HTTP.
+--2022-05-24 11:52:49--  https://doc-0c-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/i6refhm8n5api8fk10rb6d9jlearqt1g/1653393150000/16189157874053420687/*/1KRBNW33QWqbvbVHa3hLJivOAt60yukkg?e=download
+Resolving doc-0c-bo-docs.googleusercontent.com (doc-0c-bo-docs.googleusercontent.com)... 108.177.14.132
+Connecting to doc-0c-bo-docs.googleusercontent.com (doc-0c-bo-docs.googleusercontent.com)|108.177.14.132|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 7275140 (6.9M) [application/x-gzip]
+Saving to: ‘archive.tar.gz’
+
+archive.tar.gz                  0%[                                               ]       0  --.-KB/s               archive.tar.gz                  1%[                                               ] 121.85K   607KB/s               archive.tar.gz                  5%[=>                                             ] 371.03K   926KB/s               archive.tar.gz                  8%[===>                                           ] 616.84K  1.00MB/s               archive.tar.gz                 12%[====>                                          ] 881.67K  1.07MB/s               archive.tar.gz                 19%[========>                                      ]   1.37M  1.37MB/s               archive.tar.gz                 32%[==============>                                ]   2.24M  1.86MB/s               archive.tar.gz                 43%[===================>                           ]   3.05M  2.17MB/s               archive.tar.gz                 54%[========================>                      ]   3.79M  2.36MB/s               archive.tar.gz                 67%[==============================>                ]   4.67M  2.58MB/s               archive.tar.gz                 79%[====================================>          ]   5.50M  2.74MB/s               archive.tar.gz                 97%[============================================>  ]   6.77M  3.06MB/s               archive.tar.gz                100%[==============================================>]   6.94M  3.10MB/s    in 2.2s    
+
+2022-05-24 11:52:52 (3.10 MB/s) - ‘archive.tar.gz’ saved [7275140/7275140]
+
+]0;root@server:~[root@server ~]# tar -xzvf archive.tar.gz 
+zpoolexport/
+zpoolexport/filea
+zpoolexport/fileb
+]0;root@server:~[root@server ~]# zpool import -d zpoolexport/
+   pool: otus
+     id: 6554193320433390805
+  state: ONLINE
+status: Some supported features are not enabled on the pool.
+ action: The pool can be imported using its name or numeric identifier, though
+	some features will not be available without an explicit 'zpool upgrade'.
+ config:
+
+	otus                         ONLINE
+	  mirror-0                   ONLINE
+	    /root/zpoolexport/filea  ONLINE
+	    /root/zpoolexport/fileb  ONLINE
+]0;root@server:~[root@server ~]# zpool import -d zpoolexport/ otus
+]0;root@server:~[root@server ~]# zpool status
+  pool: otus
+ state: ONLINE
+status: Some supported features are not enabled on the pool. The pool can
+	still be used, but some features are unavailable.
+action: Enable all features using 'zpool upgrade'. Once this is done,
+	the pool may no longer be accessible by software that does not support
+	the features. See zpool-features(5) for details.
+config:
+
+	NAME                         STATE     READ WRITE CKSUM
+	otus                         ONLINE       0     0     0
+	  mirror-0                   ONLINE       0     0     0
+	    /root/zpoolexport/filea  ONLINE       0     0     0
+	    /root/zpoolexport/fileb  ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus1
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus1       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdb     ONLINE       0     0     0
+	    sdc     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus2
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus2       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdd     ONLINE       0     0     0
+	    sde     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus3
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus3       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdf     ONLINE       0     0     0
+	    sdg     ONLINE       0     0     0
+
+errors: No known data errors
+
+  pool: otus4
+ state: ONLINE
+config:
+
+	NAME        STATE     READ WRITE CKSUM
+	otus4       ONLINE       0     0     0
+	  mirror-0  ONLINE       0     0     0
+	    sdh     ONLINE       0     0     0
+	    sdi     ONLINE       0     0     0
+
+errors: No known data errors
+]0;root@server:~[root@server ~]# zpool get all otus
+NAME  PROPERTY                       VALUE                          SOURCE
+otus  size                           480M                           -
+otus  capacity                       0%                             -
+otus  altroot                        -                              default
+otus  health                         ONLINE                         -
+otus  guid                           6554193320433390805            -
+otus  version                        -                              default
+otus  bootfs                         -                              default
+otus  delegation                     on                             default
+otus  autoreplace                    off                            default
+otus  cachefile                      -                              default
+otus  failmode                       wait                           default
+otus  listsnapshots                  off                            default
+otus  autoexpand                     off                            default
+otus  dedupratio                     1.00x                          -
+otus  free                           478M                           -
+otus  allocated                      2.09M                          -
+otus  readonly                       off                            -
+otus  ashift                         0                              default
+otus  comment                        -                              default
+otus  expandsize                     -                              -
+otus  freeing                        0                              -
+otus  fragmentation                  0%                             -
+otus  leaked                         0                              -
+otus  multihost                      off                            default
+otus  checkpoint                     -                              -
+otus  load_guid                      14018296263152158289           -
+otus  autotrim                       off                            default
+otus  feature@async_destroy          enabled                        local
+otus  feature@empty_bpobj            active                         local
+otus  feature@lz4_compress           active                         local
+otus  feature@multi_vdev_crash_dump  enabled                        local
+otus  feature@spacemap_histogram     active                         local
+otus  feature@enabled_txg            active                         local
+otus  feature@hole_birth             active                         local
+otus  feature@extensible_dataset     active                         local
+otus  feature@embedded_data          active                         local
+otus  feature@bookmarks              enabled                        local
+otus  feature@filesystem_limits      enabled                        local
+otus  feature@large_blocks           enabled                        local
+otus  feature@large_dnode            enabled                        local
+otus  feature@sha512                 enabled                        local
+otus  feature@skein                  enabled                        local
+otus  feature@edonr                  enabled                        local
+otus  feature@userobj_accounting     active                         local
+otus  feature@encryption             enabled                        local
+otus  feature@project_quota          active                         local
+otus  feature@device_removal         enabled                        local
+otus  feature@obsolete_counts        enabled                        local
+otus  feature@zpool_checkpoint       enabled                        local
+otus  feature@spacemap_v2            active                         local
+otus  feature@allocation_classes     enabled                        local
+otus  feature@resilver_defer         enabled                        local
+otus  feature@bookmark_v2            enabled                        local
+otus  feature@redaction_bookmarks    disabled                       local
+otus  feature@redacted_datasets      disabled                       local
+otus  feature@bookmark_written       disabled                       local
+otus  feature@log_spacemap           disabled                       local
+otus  feature@livelist               disabled                       local
+otus  feature@device_rebuild         disabled                       local
+otus  feature@zstd_compress          disabled                       local
+]0;root@server:~[root@server ~]# zfs get all otus
+NAME  PROPERTY              VALUE                  SOURCE
+otus  type                  filesystem             -
+otus  creation              Fri May 15  4:00 2020  -
+otus  used                  2.04M                  -
+otus  available             350M                   -
+otus  referenced            24K                    -
+otus  compressratio         1.00x                  -
+otus  mounted               yes                    -
+otus  quota                 none                   default
+otus  reservation           none                   default
+otus  recordsize            128K                   local
+otus  mountpoint            /otus                  default
+otus  sharenfs              off                    default
+otus  checksum              sha256                 local
+otus  compression           zle                    local
+otus  atime                 on                     default
+otus  devices               on                     default
+otus  exec                  on                     default
+otus  setuid                on                     default
+otus  readonly              off                    default
+otus  zoned                 off                    default
+otus  snapdir               hidden                 default
+otus  aclmode               discard                default
+otus  aclinherit            restricted             default
+otus  createtxg             1                      -
+otus  canmount              on                     default
+otus  xattr                 on                     default
+otus  copies                1                      default
+otus  version               5                      -
+otus  utf8only              off                    -
+otus  normalization         none                   -
+otus  casesensitivity       sensitive              -
+otus  vscan                 off                    default
+otus  nbmand                off                    default
+otus  sharesmb              off                    default
+otus  refquota              none                   default
+otus  refreservation        none                   default
+otus  guid                  14592242904030363272   -
+otus  primarycache          all                    default
+otus  secondarycache        all                    default
+otus  usedbysnapshots       0B                     -
+otus  usedbydataset         24K                    -
+otus  usedbychildren        2.01M                  -
+otus  usedbyrefreservation  0B                     -
+otus  logbias               latency                default
+otus  objsetid              54                     -
+otus  dedup                 off                    default
+otus  mlslabel              none                   default
+otus  sync                  standard               default
+otus  dnodesize             legacy                 default
+otus  refcompressratio      1.00x                  -
+otus  written               24K                    -
+otus  logicalused           1020K                  -
+otus  logicalreferenced     12K                    -
+otus  volmode               default                default
+otus  filesystem_limit      none                   default
+otus  snapshot_limit        none                   default
+otus  filesystem_count      none                   default
+otus  snapshot_count        none                   default
+otus  snapdev               hidden                 default
+otus  acltype               off                    default
+otus  context               none                   default
+otus  fscontext             none                   default
+otus  defcontext            none                   default
+otus  rootcontext           none                   default
+otus  relatime              off                    default
+otus  redundant_metadata    all                    default
+otus  overlay               on                     default
+otus  encryption            off                    default
+otus  keylocation           none                   default
+otus  keyformat             none                   default
+otus  pbkdf2iters           0                      default
+otus  special_small_blocks  0                      default
+]0;root@server:~[root@server ~]# zfs get all otus[K[K[K[K[K[K[Kvailiable otus
+bad property list: invalid property 'availiable'
+usage:
+	get [-rHp] [-d max] [-o "all" | field[,...]]
+	    [-t type[,...]] [-s source[,...]]
+	    <"all" | property[,...]> [filesystem|volume|snapshot|bookmark] ...
+
+The following properties are supported:
+
+	PROPERTY       EDIT  INHERIT   VALUES
+
+	available        NO       NO   <size>
+	clones           NO       NO   <dataset>[,...]
+	compressratio    NO       NO   <1.00x or higher if compressed>
+	createtxg        NO       NO   <uint64>
+	creation         NO       NO   <date>
+	defer_destroy    NO       NO   yes | no
+	encryptionroot   NO       NO   <filesystem | volume>
+	filesystem_count  NO       NO   <count>
+	guid             NO       NO   <uint64>
+	keystatus        NO       NO   none | unavailable | available
+	logicalreferenced  NO       NO   <size>
+	logicalused      NO       NO   <size>
+	mounted          NO       NO   yes | no
+	objsetid         NO       NO   <uint64>
+	origin           NO       NO   <snapshot>
+	receive_resume_token  NO       NO   <string token>
+	redact_snaps     NO       NO   <snapshot>[,...]
+	refcompressratio  NO       NO   <1.00x or higher if compressed>
+	referenced       NO       NO   <size>
+	snapshot_count   NO       NO   <count>
+	type             NO       NO   filesystem | volume | snapshot | bookmark
+	used             NO       NO   <size>
+	usedbychildren   NO       NO   <size>
+	usedbydataset    NO       NO   <size>
+	usedbyrefreservation  NO       NO   <size>
+	usedbysnapshots  NO       NO   <size>
+	userrefs         NO       NO   <count>
+	written          NO       NO   <size>
+	aclinherit      YES      YES   discard | noallow | restricted | passthrough | passthrough-x
+	aclmode         YES      YES   discard | groupmask | passthrough | restricted
+	acltype         YES      YES   off | nfsv4 | posix
+	atime           YES      YES   on | off
+	canmount        YES       NO   on | off | noauto
+	casesensitivity  NO      YES   sensitive | insensitive | mixed
+	checksum        YES      YES   on | off | fletcher2 | fletcher4 | sha256 | sha512 | skein | edonr
+	compression     YES      YES   on | off | lzjb | gzip | gzip-[1-9] | zle | lz4 | zstd | zstd-[1-19] | zstd-fast | zstd-fast-[1-10,20,30,40,50,60,70,80,90,100,500,1000]
+	context         YES       NO   <selinux context>
+	copies          YES      YES   1 | 2 | 3
+	dedup           YES      YES   on | off | verify | sha256[,verify] | sha512[,verify] | skein[,verify] | edonr,verify
+	defcontext      YES       NO   <selinux defcontext>
+	devices         YES      YES   on | off
+	dnodesize       YES      YES   legacy | auto | 1k | 2k | 4k | 8k | 16k
+	encryption       NO      YES   on | off | aes-128-ccm | aes-192-ccm | aes-256-ccm | aes-128-gcm | aes-192-gcm | aes-256-gcm
+	exec            YES      YES   on | off
+	filesystem_limit YES       NO   <count> | none
+	fscontext       YES       NO   <selinux fscontext>
+	keyformat        NO       NO   none | raw | hex | passphrase
+	keylocation     YES       NO   prompt | <file URI>
+	logbias         YES      YES   latency | throughput
+	mlslabel        YES      YES   <sensitivity label>
+	mountpoint      YES      YES   <path> | legacy | none
+	nbmand          YES      YES   on | off
+	normalization    NO      YES   none | formC | formD | formKC | formKD
+	overlay         YES      YES   on | off
+	pbkdf2iters      NO       NO   <iters>
+	primarycache    YES      YES   all | none | metadata
+	quota           YES       NO   <size> | none
+	readonly        YES      YES   on | off
+	recordsize      YES      YES   512 to 1M, power of 2
+	redundant_metadata YES      YES   all | most
+	refquota        YES       NO   <size> | none
+	refreservation  YES       NO   <size> | none
+	relatime        YES      YES   on | off
+	reservation     YES       NO   <size> | none
+	rootcontext     YES       NO   <selinux rootcontext>
+	secondarycache  YES      YES   all | none | metadata
+	setuid          YES      YES   on | off
+	sharenfs        YES      YES   on | off | NFS share options
+	sharesmb        YES      YES   on | off | SMB share options
+	snapdev         YES      YES   hidden | visible
+	snapdir         YES      YES   hidden | visible
+	snapshot_limit  YES       NO   <count> | none
+	special_small_blocks YES      YES   zero or 512 to 1M, power of 2
+	sync            YES      YES   standard | always | disabled
+	utf8only         NO      YES   on | off
+	version         YES       NO   1 | 2 | 3 | 4 | 5 | current
+	volblocksize     NO      YES   512 to 128k, power of 2
+	volmode         YES      YES   default | full | geom | dev | none
+	volsize         YES       NO   <size>
+	vscan           YES      YES   on | off
+	xattr           YES      YES   on | off | dir | sa
+	zoned           YES      YES   on | off
+	userused@...     NO       NO   <size>
+	groupused@...    NO       NO   <size>
+	projectused@...  NO       NO   <size>
+	userobjused@...  NO       NO   <size>
+	groupobjused@...  NO       NO   <size>
+	projectobjused@...  NO       NO   <size>
+	userquota@...   YES       NO   <size> | none
+	groupquota@...  YES       NO   <size> | none
+	projectquota@... YES       NO   <size> | none
+	userobjquota@... YES       NO   <size> | none
+	groupobjquota@... YES       NO   <size> | none
+	projectobjquota@... YES       NO   <size> | none
+	written@<snap>   NO       NO   <size>
+	written#<bookmark>  NO       NO   <size>
+
+Sizes are specified in bytes with standard units such as K, M, G, etc.
+
+User-defined properties can be specified by using a name containing a colon (:).
+
+The {user|group|project}[obj]{used|quota}@ properties must be appended with
+a user|group|project specifier of one of these forms:
+    POSIX name      (eg: "matt")
+    POSIX id        (eg: "126829")
+    SMB name@domain (eg: "matt@sun")
+    SMB SID         (eg: "S-1-234-567-89")
+]0;root@server:~[root@server ~]# zfs get availiable otus[1P
+NAME  PROPERTY   VALUE  SOURCE
+otus  available  350M   -
+]0;root@server:~[root@server ~]# zfs get available otus[C[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otusr otuse otusa otusd otuso otusn otusl otusy otus
+NAME  PROPERTY  VALUE   SOURCE
+otus  readonly  off     default
+]0;root@server:~[root@server ~]# zfs get readonly otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otusc otuso otusm otusp otusr otuse otuss otuss otusi otuso otusn otus
+NAME  PROPERTY     VALUE           SOURCE
+otus  compression  zle             local
+]0;root@server:~[root@server ~]# zfs get compression otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otus[1P otusc otush otuse otusc otusk otuss otusu otusm otus
+NAME  PROPERTY  VALUE      SOURCE
+otus  checksum  sha256     local
+]0;root@server:~[root@server ~]# wget -O otus_task2.file --no-check-certificate 'https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRRmplZPF1XjzxeRAG&export=download'
+--2022-05-24 12:00:27--  https://drive.google.com/u/0/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download
+Resolving drive.google.com (drive.google.com)... 108.177.14.194
+Connecting to drive.google.com (drive.google.com)|108.177.14.194|:443... connected.
+HTTP request sent, awaiting response... 302 Found
+Location: https://drive.google.com/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download [following]
+--2022-05-24 12:00:28--  https://drive.google.com/uc?id=1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG&export=download
+Reusing existing connection to drive.google.com:443.
+HTTP request sent, awaiting response... 303 See Other
+Location: https://doc-00-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/qgb68egh24o54s05co9gtmp9lkge9a62/1653393600000/16189157874053420687/*/1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG?e=download [following]
+Warning: wildcards not supported in HTTP.
+--2022-05-24 12:00:33--  https://doc-00-bo-docs.googleusercontent.com/docs/securesc/ha0ro937gcuc7l7deffksulhg5h7mbp1/qgb68egh24o54s05co9gtmp9lkge9a62/1653393600000/16189157874053420687/*/1gH8gCL9y7Nd5Ti3IRmplZPF1XjzxeRAG?e=download
+Resolving doc-00-bo-docs.googleusercontent.com (doc-00-bo-docs.googleusercontent.com)... 108.177.14.132
+Connecting to doc-00-bo-docs.googleusercontent.com (doc-00-bo-docs.googleusercontent.com)|108.177.14.132|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5432736 (5.2M) [application/octet-stream]
+Saving to: ‘otus_task2.file’
+
+otus_task2.file                 0%[                                               ]       0  --.-KB/s               otus_task2.file                 2%[                                               ] 112.30K   561KB/s               otus_task2.file                 7%[==>                                            ] 375.47K   937KB/s               otus_task2.file                11%[====>                                          ] 635.56K  1.03MB/s               otus_task2.file                17%[=======>                                       ] 914.02K  1.11MB/s               otus_task2.file                29%[============>                                  ]   1.54M  1.53MB/s               otus_task2.file                47%[=====================>                         ]   2.46M  2.04MB/s               otus_task2.file                63%[============================>                  ]   3.29M  2.33MB/s               otus_task2.file                80%[====================================>          ]   4.18M  2.59MB/s               otus_task2.file               100%[==============================================>]   5.18M  2.96MB/s    in 1.8s    
+
+2022-05-24 12:00:35 (2.96 MB/s) - ‘otus_task2.file’ saved [5432736/5432736]
+
+]0;root@server:~[root@server ~]# zfs receive otus/test@today < otus_task2.file[1@1
+]0;root@server:~[root@server ~]# ll ot[K[K/otus1/
+pg2600.converter.log  test/                 
+[root@server ~]# ll /otus1/
+pg2600.converter.log  test/                 
+[root@server ~]# ll /otus1/test/
+total 2193
+-rw-r--r--. 1 root    root          0 May 15  2020 10M.file
+-rw-r--r--. 1 root    root     727040 May 15  2020 [0m[01;31mcinderella.tar[0m
+-rw-r--r--. 1 root    root         65 May 15  2020 for_examaple.txt
+-rw-r--r--. 1 root    root          0 May 15  2020 homework4.txt
+-rw-r--r--. 1 root    root     309987 May 15  2020 Limbo.txt
+-rw-r--r--. 1 root    root     509836 May 15  2020 Moby_Dick.txt
+drwxr-xr-x. 3 vagrant vagrant       4 Dec 18  2017 [01;34mtask1[0m
+-rw-r--r--. 1 root    root    1209374 May  6  2016 War_and_Peace.txt
+-rw-r--r--. 1 root    root     398635 May 15  2020 world.sql
+]0;root@server:~[root@server ~]# ll /otus1/test/-/otus1/test/a/otus1/test/ /otus1/test/
+total 2195
+drwxr-xr-x. 3 root    root         11 May 15  2020 [0m[01;34m.[0m
+drwxr-xr-x. 3 root    root          4 May 24 12:02 [01;34m..[0m
+-rw-r--r--. 1 root    root          0 May 15  2020 10M.file
+-rw-r--r--. 1 root    root     727040 May 15  2020 [01;31mcinderella.tar[0m
+-rw-r--r--. 1 root    root         65 May 15  2020 for_examaple.txt
+-rw-r--r--. 1 root    root          0 May 15  2020 homework4.txt
+-rw-r--r--. 1 root    root     309987 May 15  2020 Limbo.txt
+-rw-r--r--. 1 root    root     509836 May 15  2020 Moby_Dick.txt
+drwxr-xr-x. 3 vagrant vagrant       4 Dec 18  2017 [01;34mtask1[0m
+-rw-r--r--. 1 root    root    1209374 May  6  2016 War_and_Peace.txt
+-rw-r--r--. 1 root    root     398635 May 15  2020 world.sql
+]0;root@server:~[root@server ~]# find /orus1/tes[K[K[K[K[K[K[K[Ktus1/test/ -name "secret_*'[K"
+/otus1/test/task1/file_mess/secret_message
+]0;root@server:~[root@server ~]# cat /otus1/test/task1/file_mess/secret_message
+https://github.com/sindresorhus/awesome
+]0;root@server:~[root@server ~]# exit
+logout
+]0;vagrant@server:~[vagrant@server ~]$ exit
+logout
+Connection to 127.0.0.1 closed.
+]0;mp@almavm:~/otus/zfs[mp@almavm zfs]$ exit
+
+Script done on 2022-05-24 15:07:12+03:00
