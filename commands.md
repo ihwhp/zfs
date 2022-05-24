@@ -1,4 +1,4 @@
-:white_check_mark: Commands used/:
+# Commands used:
 lsblk -f
 zpool --help
 zpool create otus1 mirror /dev/sd{b,c}   
